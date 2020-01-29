@@ -8,7 +8,7 @@ import discord.utils
 
 
 #bot token
-token = 'NjY3Nzk5MjQ0OTg3Njk1MTA0.XjHWCQ.XiCyKLghl_EHLmgFSWMxrxuoGFA' #this should be in a seperate file but its not public so who cares
+token = '<insert token here>' #this should be in a seperate file but its not public so who cares
 
 client = discord.Client()
 defaultChannel = client.get_channel(312216330604642305)
