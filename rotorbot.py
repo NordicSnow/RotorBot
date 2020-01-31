@@ -1,18 +1,14 @@
-# dependencies 
-import os
-from array import *
-import urllib.request, json
-import re
-import discord
+# libraries
+import os, urllib.request, json, re, discord, discord.utils
 from discord.ext import commands
-import discord.utils
+
 
 
 #bot token
-token = 'NjY3Nzk5MjQ0OTg3Njk1MTA0.XjRzDQ.bnf84WrJleG4_4P6VPgkv5OZ9Ac' #this should be in a seperate file but its not public so who cares
+token = '<insert token here>' #this should be in a seperate file but its not public so who cares
 
-client = discord.Client()
-defaultChannel = client.get_channel(312216330604642305)
+client = discord.Client() #client object
+defaultChannel = client.get_channel(312216330604642305) #sets default channel as #garage
 
 roleList = ["SA", "FB", "FC", "FD", "RX-8", "MX-5"] #list of roles available to assign via bot
 
