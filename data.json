@@ -1,126 +1,188 @@
-{
-    "68shortwide": {
+[
+    {
         "description": "68shortwide's RX7",
-        "link": "https://i.imgur.com/VXN6QXS.jpg"
+        "id": 512361976848973826,
+        "link": "https://i.imgur.com/VXN6QXS.jpg",
+        "username": "68shortwide"
     },
-    "arne": {
+    {
         "description": "Arne's German 1981 SA22C RX7 that is actually an FB",
-        "link": "https://i.imgur.com/NAb0i3v.jpg"
+        "id": 166630647111221248,
+        "link": "https://i.imgur.com/NAb0i3v.jpg",
+        "username": "arne"
     },
-    "deckard": {
+    {
         "description": "Deckard's 1991 FC Convert-a-ble",
-        "link": "https://i.imgur.com/8hmJQOI.jpg"
+        "id": 123,
+        "link": "https://i.imgur.com/8hmJQOI.jpg",
+        "username": "deckard"
     },
-    "djstagen": {
+    {
         "description": "DJstagen's less embarrassing 2020 Veloster Type ~~R~~ N!",
-        "link": "https://i.imgur.com/ElHXcZh.jpg"
+        "id": 253398530251554816,
+        "link": "https://i.imgur.com/ElHXcZh.jpg",
+        "username": "djstagen"
     },
-    "ishi": {
+    {
         "description": "Ishi's RX7+1",
-        "link": "https://i.imgur.com/wMqqjw1.jpg"
+        "id": 337718272382468098,
+        "link": "https://i.imgur.com/wMqqjw1.jpg",
+        "username": "ishi"
     },
-    "jasonwhite": {
+    {
         "description": "Jason White's 1995 Type M - Big Single",
-        "link": "https://i.imgur.com/zFCLzUH.jpg"
+        "id": 398788076652199937,
+        "link": "https://i.imgur.com/zFCLzUH.jpg",
+        "username": "jasonwhite"
     },
-    "kensu": {
+    {
         "description": "Kensu's 2004 RX7+1 Sport",
-        "link": "https://i.imgur.com/SFIoBZZ.jpg"
+        "id": 83560844121608192,
+        "link": "https://i.imgur.com/SFIoBZZ.jpg",
+        "username": "kensu"
     },
-    "kosak": {
+    {
         "description": "Kosak's 1974 Rotary Engine Pickup. The one truck your friends *won't* beg you to help them move with!",
-        "link": "https://i.imgur.com/pJKMe0g.jpg"
+        "id": 120628433918099456,
+        "link": "https://i.imgur.com/pJKMe0g.jpg",
+        "username": "kosak"
     },
-    "mikeonhilljr": {
+    {
         "description": "Mike's 1988 Mazda RX7 GTU",
-        "link": "https://i.imgur.com/ZtpIq5n.jpg"
+        "id": 104306446845353984,
+        "link": "https://i.imgur.com/ZtpIq5n.jpg",
+        "username": "mikeonhilljr"
     },
-    "mopar": {
+    {
         "description": "Mopar's 1986 RX-7 powered by that one GM four banger everyone loves to hate",
-        "link": "https://i.imgur.com/QZeC7Ru.jpg"
+        "id": 291702163112067075,
+        "link": "https://i.imgur.com/QZeC7Ru.jpg",
+        "username": "mopar"
     },
-    "mostart": {
+    {
         "description": "Mostart's 1988 RX-7 Convertible",
-        "link": "https://i.imgur.com/544vZH3.jpg"
+        "id": 123,
+        "link": "https://i.imgur.com/544vZH3.jpg",
+        "username": "mostart"
     },
-    "mrkawaii": {
+    {
         "description": "Mr Kawaii's 1987 S4 FC NA",
-        "link": "https://i.imgur.com/5o5ItuB.jpg"
+        "id": 203815313685348352,
+        "link": "https://i.imgur.com/5o5ItuB.jpg",
+        "username": "mrkawaii"
     },
-    "mrmiata": {
+    {
         "description": "Mr Miata's 2001 NB-FL",
-        "link": "https://i.imgur.com/FWDDnPh.jpg"
+        "id": 208976131951558656,
+        "link": "https://i.imgur.com/FWDDnPh.jpg",
+        "username": "mrmiata"
     },
-    "nikku": {
+    {
         "description": "Nikku's 2002 Type R Bathurst!",
-        "link": "https://i.imgur.com/57LlGOH.jpg"
+        "id": 99074887636754432,
+        "link": "https://i.imgur.com/57LlGOH.jpg",
+        "username": "nikku"
     },
-    "nordic": {
-        "description": "Nordic's 1987 Turbo II, and full-time smoke generator",
-        "link": "https://i.imgur.com/BBuNueM.jpg"
+    {
+        "description": "bad code is bad",
+        "id": 52522956294721536,
+        "link": "https://i.imgur.com/BzrYyd0.png",
+        "username": "nordic"
     },
-    "okami": {
+    {
         "description": "Okami's 1988 RX-7 Turbo making 285 on 8 Psi! (not 370hp)",
-        "link": "https://i.imgur.com/49wCtwA.jpg"
+        "id": 117859345139499008,
+        "link": "https://i.imgur.com/49wCtwA.jpg",
+        "username": "okami"
     },
-    "ooohhaaahh": {
+    {
         "description": "ooohhaaahh's 1988 rx-7 turbo",
-        "link": "https://i.imgur.com/rzoNuy0.jpg"
+        "id": 167194555693662210,
+        "link": "https://i.imgur.com/rzoNuy0.jpg",
+        "username": "ooohhaaahh"
     },
-    "pepperz": {
+    {
         "description": "Pepperz 2000 Toyota Pupra, I mean Supra",
-        "link": "https://i.imgur.com/g52TufQ.jpg"
+        "id": 175047808548601856,
+        "link": "https://i.imgur.com/g52TufQ.jpg",
+        "username": "pepperz"
     },
-    "pmot": {
+    {
         "description": "P_mot's 1991 RX-7 convertible with a (gasp) LS going into it.",
-        "link": "https://i.imgur.com/nREWyq9.jpg"
+        "id": 221087889268801537,
+        "link": "https://i.imgur.com/nREWyq9.jpg",
+        "username": "pmot"
     },
-    "redmustard": {
+    {
         "description": "Red Mustard's 1988 Mazda RX-7 Convertible",
-        "link": "https://i.imgur.com/43Sz9ku.jpg"
+        "id": 123,
+        "link": "https://i.imgur.com/43Sz9ku.jpg",
+        "username": "redmustard"
     },
-    "richardpetty": {
+    {
         "description": "Richard Petty's 1969 Triumph Spitfire with a 12A, and Jeep with a 20B",
-        "link": "https://i.imgur.com/7UZWYRT.jpg"
+        "id": 281529134449033216,
+        "link": "https://i.imgur.com/7UZWYRT.jpg",
+        "username": "richardpetty"
     },
-    "rrkumo": {
+    {
         "description": "RRKumo's 1979 SA Limited",
-        "link": "https://i.imgur.com/Li6j1bB.jpg"
+        "id": 334494881403895809,
+        "link": "https://i.imgur.com/Li6j1bB.jpg",
+        "username": "rrkumo"
     },
-    "sam": {
+    {
         "description": "Sam's sometimes functional 1997 RX-8[-1] type R!",
-        "link": "https://i.imgur.com/b8dYslW.jpg"
+        "id": 283532012105629696,
+        "link": "https://i.imgur.com/b8dYslW.jpg",
+        "username": "sam"
     },
-    "scott": {
+    {
         "description": "Scott's 1987 RX-7 Turbo",
-        "link": "https://i.imgur.com/iB6ZKKU.jpg"
+        "id": 289516024083120149,
+        "link": "https://i.imgur.com/iB6ZKKU.jpg",
+        "username": "scott"
     },
-    "silverslowtary": {
+    {
         "description": "Silver Slowtary\u2019s slow 86 GXL",
-        "link": "https://i.imgur.com/mNu7xs7.jpg"
+        "id": 292504505730334720,
+        "link": "https://i.imgur.com/mNu7xs7.jpg",
+        "username": "silverslowtary"
     },
-    "slender": {
+    {
         "description": "slenderbrinek's 1985 RX-7 GSL",
-        "link": "https://i.imgur.com/iYlr1fT.jpg"
+        "id": 376982602000760833,
+        "link": "https://i.imgur.com/iYlr1fT.jpg",
+        "username": "slender"
     },
-    "swanky": {
+    {
         "description": "SwankyScrub's 1988 RX-7 with a disappearing roof",
-        "link": "https://i.imgur.com/wa48Idg.jpg"
+        "id": 318951794401345537,
+        "link": "https://i.imgur.com/wa48Idg.jpg",
+        "username": "swanky"
     },
-    "template": {
+    {
         "description": "",
-        "link": ""
+        "id": 123,
+        "link": "",
+        "username": "template"
     },
-    "thunderrunner": {
+    {
         "description": "Thunder Runner's Porsche 944 Turbo. It's basically a German FC. Kinda.",
-        "link": "https://i.imgur.com/HiXOIuK.png"
+        "id": 123,
+        "link": "https://i.imgur.com/HiXOIuK.png",
+        "username": "thunderrunner"
     },
-    "weeeee00": {
+    {
         "description": "Weeeee00's 1989 Turbo II",
-        "link": "https://i.imgur.com/0C83dBl.jpg"
+        "id": 356284706268119054,
+        "link": "https://i.imgur.com/0C83dBl.jpg",
+        "username": "weeeee00"
     },
-    "wrex": {
+    {
         "description": "Wrex's 1988 RX-7 GXL!",
-        "link": "https://i.imgur.com/wYv5U8n.jpg"
+        "id": 203284441122996224,
+        "link": "https://i.imgur.com/wYv5U8n.jpg",
+        "username": "wrex"
     }
-}
+]

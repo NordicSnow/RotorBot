@@ -89,18 +89,18 @@ async def on_message(message):
             data = json.load(f) #decodes data into dict
         
         checkVal = False #creates a check value to determine if user is unique
-        for name, info in data.items():  #iterates JSON object names 
-            if message.author.name.lower() == name: #detects if an entry matches the username of the invoker
+        for i, info in enumerate(data, start=0):  #iterates JSON object names 
+            if message.author.id == info["id"]: #detects if an entry matches the username of the invoker
                 checkVal = True #if so, the check value is assigned to true to indicate the user is returning
-                data[name]['description'] = desc #assigns new description to user's information
-                data[name]['link'] = imgur #assigns new image link to user's information
+                data[i]['description'] = desc #assigns new description to user's information
+                data[i]['link'] = imgur #assigns new image link to user's information
                 
                 with open('data.json', 'w') as json_file: #opens json file in write mode
                     json.dump(data, json_file, indent = 4, sort_keys=True) #writes data to file and formats it
                 await message.channel.send("~~thank you!!! ^>^\nyour data has been updated! have a nice day! {◕ ◡ ◕}") #sends confirmation
         if checkVal == False: #if user doesn't exist, then this value is still set to false
             await message.channel.send("hmm, i can't seem to find a record on you. let me create one real quick... ╰(◡‿◡✿╰)") #sends error message
-            data[message.author.name.lower()] = {'description': desc, 'link': imgur}
+            data.append({'description': desc, 'link': imgur, 'id': message.author.id, 'username': message.author.name.lower()})
             try:
                 with open('data.json', 'w') as json_file:
                         json.dump(data, json_file, indent = 4, sort_keys=True)
@@ -124,10 +124,10 @@ async def on_message(message):
             data = json.load(f)
         #with urllib.request.urlopen("http://zekial.io/data.json") as url: #opens JSON file from remote webserver
             #data = json.loads(url.read().decode()) #reads and decodes JSON into nested dictionary
-        for name, info in data.items():  #iterates JSON object names 
-            testCase = firstLetter + name #concatonates name with a leading "+" that is part of the invoking letter. Can be configured using the firstLetter variable.
+        for i, info in enumerate(data, start=0):  #iterates JSON object names 
+            testCase = firstLetter + data[i]['username'] #concatonates name with a leading "+" that is part of the invoking letter. Can be configured using the firstLetter variable.
             if (message.content.lower()) == (testCase): #detects if an entry matches the invoked command
-                response = data[name]['description'] + "\n" + data[name]['link'] #creates text to be sent involving saved data
+                response = data[i]['description'] + "\n" + data[i]['link'] #creates text to be sent involving saved data
                 await message.channel.send(response) #transmits data
     
    
