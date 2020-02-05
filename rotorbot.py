@@ -1,8 +1,12 @@
 # libraries
-import os, urllib.request, json, re, discord, discord.utils
+import os, re, discord, discord.utils, sqlite3, os.path
 from discord.ext import commands
 
-
+#db connection
+BASE_DIR = os.path.dirname(os.path.abspath(__file__)) #directs to exact file
+db_path = os.path.join(BASE_DIR, "imagestore.db") #database name configured here
+conn = sqlite3.connect(db_path, isolation_level=None) #set to apply changes on execution
+c = conn.cursor()
 
 #bot token
 token = '<insert token here>' #this should be in a seperate file but its not public so who cares
@@ -14,10 +18,10 @@ roleList = ["SA", "FB", "FC", "FD", "RX-8", "MX-5"] #list of roles available to 
 
 
 #help document
-embed = discord.Embed(title="RotorBot Help", colour=discord.Colour(0x29aaca), description="this is the help document for RotorBot version 0.6")
+embed = discord.Embed(title="RotorBot Help", colour=discord.Colour(0x29aaca), description="this is the help document for RotorBot version 0.7")
 embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
 embed.set_author(name="RotorBot", url="https://github.com/NordicSnow/RotorBot", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
-embed.set_footer(text="rotorbot v0.6", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
+embed.set_footer(text="rotorbot v0.7", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
 embed.add_field(name="Role Picker", value="To pick roles, use the '+addcar' command followed by one of these options:\n***SA***\n***FB***\n***FC***\n***FD***\n***RX-8***\n***MX-5***")
 embed.add_field(name="Image Linker", value="To link a user image, just type in a '+' followed by their username, eg '+nordic'.\nFor a full list of usernames and descriptions, check out http://zekial.io/data.json\nIf you would like yours added, please contact Nordic with a picture and description.")
 embed.add_field(name="Image Assigner", value="To add or edit a user image saved in the image linker, use the command '+addimage [direct imgur link] " + '"[description]"' +"'. Make sure to take note of the quotes on the description, which are required.")
@@ -38,6 +42,7 @@ async def on_member_join(member):
 
 @client.event
 async def on_message(message):
+    uid = (message.author.id,)
     text = message.content.split()
     if message.author == client.user: # prevents recursive loop
         return
@@ -85,55 +90,37 @@ async def on_message(message):
             return #ends add image command to prevent exceptions from occuring due to bad data
 
         
-        with open('data.json') as f: #loads local JSON file
-            data = json.load(f) #decodes data into dict
         
-        checkVal = False #creates a check value to determine if user is unique
-        for i, info in enumerate(data, start=0):  #iterates JSON object names 
-            if message.author.id == info["id"]: #detects if an entry matches the username of the invoker
-                checkVal = True #if so, the check value is assigned to true to indicate the user is returning
-                data[i]['description'] = desc #assigns new description to user's information
-                data[i]['link'] = imgur #assigns new image link to user's information
-                
-                with open('data.json', 'w') as json_file: #opens json file in write mode
-                    json.dump(data, json_file, indent = 4, sort_keys=True) #writes data to file and formats it
-                await message.channel.send("~~thank you!!! ^>^\nyour data has been updated! have a nice day! {◕ ◡ ◕}") #sends confirmation
-        if checkVal == False: #if user doesn't exist, then this value is still set to false
+        c.execute('SELECT * FROM images WHERE UID =?', uid) #pulls user information
+        currentData = (c.fetchone())
+        if currentData == None: #checks to see if user exists in the database
             await message.channel.send("hmm, i can't seem to find a record on you. let me create one real quick... ╰(◡‿◡✿╰)") #sends error message
-            data.append({'description': desc, 'link': imgur, 'id': message.author.id, 'username': message.author.name.lower()})
-            try:
-                with open('data.json', 'w') as json_file:
-                        json.dump(data, json_file, indent = 4, sort_keys=True)
-                await message.channel.send("~~lovely. i created a record and added in your information! have a nice day! (^▽^)") #sends sucess message
-            except:
-                await message.channel.send("something went wrong!!! please contact an administrator.") #sends failure message
+            c.execute('INSERT INTO images VALUES (?,?,?,?)', (message.author.name.lower(), message.author.id, desc, imgur)) #creates new values using user account and provided information
+            await message.channel.send("~~lovely. i created a record and added in your information! have a nice day! (^▽^)") #sends sucess message
+        else:
+            c.execute('UPDATE images SET description = ?, link = ? WHERE uid = ? ', (desc, imgur, message.author.id)) #updates existing information
+            await message.channel.send("~~thank you!!! ^>^\nyour data has been updated! have a nice day! {◕ ◡ ◕}") #sends confirmation
+        
 
     #help command
     elif message.content.lower() == "+help": #checks if user typed in help command
             await message.channel.send("~this is what you need to say to control me, master (´･ω･`)")
             await message.channel.send(embed=embed) #sends help documentation embed
 
-    elif message.content.lower() == "+lewd": #checks if user typed in help command
-            await message.channel.send("this command exists. idk what to do with it yet tho.")
+    elif message.content.lower() == "+iq": #checks if user has indicated they are dealing with a low IQ individual
+            await message.channel.send("To be fair, you have to have a very high IQ to drive an FD RX-7.The car is extremely superior to any other modern supercar, and without a solid grasp of theoretical physics you can't even drive it. There's also it’s linear power delivery, which is deftly woven into it’s driving characterisation- it’s personal philosophy draws heavily from Italian designs, for instance. I personally understand this stuff; I have the intellectual capacity to truly appreciate the supreme handling, to realise that it’s not just good- it says something deep about LIFE. As a consequence people who dislike the FD truly ARE idiots- of course they wouldn't appreciate, for instance, the humour in the FD’s existential catchphrase “Boost in, Apex Seals out,” which itself is a cryptic reference to the tenuous balance between life and death. I'm smirking right now just imagining one of those addlepated simpletons scratching their heads in confusion as Yoichi Sato's genius design unfolds itself on the race track. What fools.. how I pity them. :joy: And yes, by the way, i DO have a FD tattoo. And no, you cannot see it. It's for the ladies' eyes only- and even then they have to demonstrate that they're within 5 IQ points of my own (preferably lower) beforehand. Nothin personnel kid :sunglasses:")
 
     #Image Link Handler v0.4 - now ignores case
     firstLetter = message.content[0] #checks if first letter of a message is the invoking one. Can be configured from here.
     if firstLetter == "+": #if not invoking, request is thrown out
         
-        with open('data.json') as f:
-            data = json.load(f)
-        #with urllib.request.urlopen("http://zekial.io/data.json") as url: #opens JSON file from remote webserver
-            #data = json.loads(url.read().decode()) #reads and decodes JSON into nested dictionary
-        for i, info in enumerate(data, start=0):  #iterates JSON object names 
-            testCase = firstLetter + data[i]['username'] #concatonates name with a leading "+" that is part of the invoking letter. Can be configured using the firstLetter variable.
-            if (message.content.lower()) == (testCase): #detects if an entry matches the invoked command
-                response = data[i]['description'] + "\n" + data[i]['link'] #creates text to be sent involving saved data
-                await message.channel.send(response) #transmits data
-    
-   
-
-
-
-    
+        commandName = (message.content.lower()[1:],) # checks command name
+        c.execute('SELECT * FROM images WHERE Username =?', commandName) #compares command name amoung populated users
+        currentData = (c.fetchone())
+        if currentData == None: #if no user exists, command ends
+            return
+        else:
+            await message.channel.send(currentData[2] + "\n" + currentData[3]) #otherwise, information from DB is supplied.
+            
 #run command
 client.run(token)
