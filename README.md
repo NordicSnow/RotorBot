@@ -1,4 +1,4 @@
-# RotorBot v0.6
+# RotorBot v0.7
 a discord bot that replies image links and descriptions. designed to be used for hosting image links and descriptions of user's cars.
 command names, descriptions, and image links are imported from a local SQLite database.
 
