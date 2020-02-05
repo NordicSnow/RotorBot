@@ -18,10 +18,10 @@ roleList = ["SA", "FB", "FC", "FD", "RX-8", "MX-5"] #list of roles available to 
 
 
 #help document
-embed = discord.Embed(title="RotorBot Help", colour=discord.Colour(0x29aaca), description="this is the help document for RotorBot version 0.7")
+embed = discord.Embed(title="RotorBot Help", colour=discord.Colour(0x29aaca), description="this is the help document for RotorBot version 0.8")
 embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
 embed.set_author(name="RotorBot", url="https://github.com/NordicSnow/RotorBot", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
-embed.set_footer(text="rotorbot v0.7", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
+embed.set_footer(text="rotorbot v0.8", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
 embed.add_field(name="Role Picker", value="To add a new role, use the '+addcar' command followed by one of these options:\n***SA***\n***FB***\n***FC***\n***FD***\n***RX-8***\n***MX-5***")
 embed.add_field(name="Show an image of a user's car", value="To see a given user's car, just type in a '+' followed by their username, eg '+nordic'.")
 embed.add_field(name="Add yourself to the image linker", value="To add or edit a user image saved in the image linker, use the command '+addimage " + '"[description]"' +"' and attach your image to the message. Make sure to take note of the quotes on the description, which are required.")

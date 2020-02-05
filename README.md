@@ -1,4 +1,4 @@
-# RotorBot v0.7
+# RotorBot v0.8
 
 ##prereqs: [discord.py](https://github.com/Rapptz/discord.py), [requests](https://github.com/psf/requests)
 
