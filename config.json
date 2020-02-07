@@ -1,0 +1,9 @@
+{
+  "discord_token": "<insert token here>",
+  "imgur_token": "<insert token here>",
+  "server_id": 402689014328721418,
+  "welcome_channel": 402689014328721420,
+  "database_name": "imagestore.db",
+  "playing_message" : "in testing mode",
+  "welcome_message" : "Welcome to the test server! We hope you have a great result! :wink: \nIf you have any questions feel free to contact the Nordic!"
+}

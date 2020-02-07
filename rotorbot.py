@@ -2,15 +2,20 @@
 import os, re, discord, discord.utils, sqlite3, os.path, requests, json
 from discord.ext import commands
 
-#db connection
+#io
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)) #directs to exact file
 db_path = os.path.join(BASE_DIR, "imagestore.db") #database name configured here
+config_path = os.path.join(BASE_DIR, 'config.json')
 conn = sqlite3.connect(db_path, isolation_level=None) #set to apply changes on execution
 c = conn.cursor()
 
+#grabs config data
+with open(config_path, "r") as read_file:
+    config = json.load(read_file)
+
 #bot tokens
-token = '<insert discord bot token here>' #discord api client token
-clientID='<insert imgur app client ID here>' #imgur api client ID
+token = config["discord_token"] #discord api client token
+clientID=config["imgur_token"] #imgur api client ID
 
 client = discord.Client() #client object
 
@@ -18,26 +23,35 @@ roleList = ["SA", "FB", "FC", "FD", "RX-8", "MX-5"] #list of roles available to 
 
 
 #help document
-embed = discord.Embed(title="RotorBot Help", colour=discord.Colour(0x29aaca), description="this is the help document for RotorBot version 0.8")
+embed = discord.Embed(title="RotorBot Help", colour=discord.Colour(0x29aaca), description="this is the help document for RotorBot version 0.9")
 embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
 embed.set_author(name="RotorBot", url="https://github.com/NordicSnow/RotorBot", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
-embed.set_footer(text="rotorbot v0.8", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
+embed.set_footer(text="rotorbot v0.9", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
 embed.add_field(name="Role Picker", value="To add a new role, use the '+addcar' command followed by one of these options:\n***SA***\n***FB***\n***FC***\n***FD***\n***RX-8***\n***MX-5***")
 embed.add_field(name="Show an image of a user's car", value="To see a given user's car, just type in a '+' followed by their username, eg '+nordic'.")
 embed.add_field(name="Add yourself to the image linker", value="To add or edit a user image saved in the image linker, use the command '+addimage " + '"[description]"' +"' and attach your image to the message. Make sure to take note of the quotes on the description, which are required.")
 
+#for public servers not using role picker
+embedNo7 = discord.Embed(title="RotorBot Help", colour=discord.Colour(0x29aaca), description="this is the help document for RotorBot version 0.9")
+embedNo7.set_thumbnail(url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
+embedNo7.set_author(name="RotorBot", url="https://github.com/NordicSnow/RotorBot", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
+embedNo7.set_footer(text="rotorbot v0.9", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
+embedNo7.add_field(name="Show an image of a user's car", value="To see a given user's car, just type in a '+' followed by their username, eg '+nordic'.")
+embedNo7.add_field(name="Add yourself to the image linker", value="To add or edit a user image saved in the image linker, use the command '+addimage " + '"[description]"' +"' and attach your image to the message. Make sure to take note of the quotes on the description, which are required.")
 #shows console ready message and changes game status
 @client.event
 async def on_ready():
     print(f'{client.user.name} has connected to Discord!')
-    await client.change_presence(activity=discord.Game(name='with ignition timing'))
+    await client.change_presence(activity=discord.Game(name=config['playing_message']))
 
 #welcomes users, mentions them to grab attention, and points them to the welcome channel
 @client.event
 async def on_member_join(member):
-    await client.wait_until_ready()
-    channel = client.get_channel(312216330604642305)
-    await channel.send('Hello '+ member.mention +', Welcome to the RX-7 Discord Server! We hope you have a great experience! :wink: \nRemember to read ' + '<#333542287256846348>, and if you have any questions feel free to contact the mod team!')
+
+    if member.guild.id == config['server_id']: #checks to see if user is joining r/rx7 discord. this allows for one image db to run on multiple servers.
+        await client.wait_until_ready()
+        channel = client.get_channel(config['welcome_channel'])
+        await channel.send('Hello '+ member.mention +', ' + config['welcome_message'])
 
 
 @client.event
@@ -51,7 +65,7 @@ async def on_message(message):
     
 
     #role assign
-    if message.content[:7] == '+addcar':#checks if addcar command is inputed
+    if message.content[:7] == '+addcar' and message.guild.id == config['server_id']: #checks if addcar command is inputed. only works on r/rx7. TODO: move role adding to function to support multiple servers
 
         #todo: make this section less of a bodge
         if message.content[8:].upper() == "RX8": #checks if command is "rx8", as the actual name of the role is "RX-8"
@@ -108,8 +122,12 @@ async def on_message(message):
 
     #help command
     elif message.content.lower() == "+help": #checks if user typed in help command
+        if message.guild.id == config['server_id']:
             await message.channel.send("~this is what you need to say to control me, master (´･ω･`)")
             await message.channel.send(embed=embed) #sends help documentation embed
+        else:
+            await message.channel.send("~this is what you need to say to control me, master (´･ω･`)")
+            await message.channel.send(embed=embedNo7) #sends help documentation embed
 
     elif message.content.lower() == "+iq": #checks if user has indicated they are dealing with a low IQ individual
             await message.channel.send("To be fair, you have to have a very high IQ to drive an FD RX-7.The car is extremely superior to any other modern supercar, and without a solid grasp of theoretical physics you can't even drive it. There's also it’s linear power delivery, which is deftly woven into it’s driving characterisation- it’s personal philosophy draws heavily from Italian designs, for instance. I personally understand this stuff; I have the intellectual capacity to truly appreciate the supreme handling, to realise that it’s not just good- it says something deep about LIFE. As a consequence people who dislike the FD truly ARE idiots- of course they wouldn't appreciate, for instance, the humour in the FD’s existential catchphrase “Boost in, Apex Seals out,” which itself is a cryptic reference to the tenuous balance between life and death. I'm smirking right now just imagining one of those addlepated simpletons scratching their heads in confusion as Yoichi Sato's genius design unfolds itself on the race track. What fools.. how I pity them. :joy: And yes, by the way, i DO have a FD tattoo. And no, you cannot see it. It's for the ladies' eyes only- and even then they have to demonstrate that they're within 5 IQ points of my own (preferably lower) beforehand. Nothin personnel kid :sunglasses:")
