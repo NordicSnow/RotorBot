@@ -1,6 +1,7 @@
 # libraries
 import os, re, discord, discord.utils, sqlite3, os.path, requests, json
 from discord.ext import commands
+from random import randrange
 
 #io
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)) #directs to exact file
@@ -20,6 +21,8 @@ clientID=config["imgur_token"] #imgur api client ID
 client = discord.Client() #client object
 
 roleList = ["SA", "FB", "FC", "FD", "RX-8", "MX-5"] #list of roles available to assign via bot
+phrases = ["Hello, how are you? (⌒o⌒)", "How can i help you today? (≧◡≦)", "whats up? （＾⊆＾）", "tell me a joke! ^o^", "Hope you're having a fantastic day! ヽ( ´ ∇ ｀ )ノ"]
+phrases2 = ["how goes the swap? not done yet? figures.", "in over your head? you can stop whenever you want <3", "i'll be happy to assist in the process of inserting a Mazda RE into any car. thank you for your consideration!", "its... so... heavy...", "i would be scared if i was your firewall...", "wasn't this supposed to be 'easy'? :wink:"]
 
 
 #help document
@@ -56,6 +59,11 @@ async def on_member_join(member):
 
 @client.event
 async def on_message(message):
+    
+    try:
+        role_names = [role.name for role in message.author.roles]
+    except:
+        return
     uid = (message.author.id,)
     text = message.content.split()
     if message.author == client.user: # prevents recursive loop
@@ -63,7 +71,8 @@ async def on_message(message):
     if message.content == "": #ignores messages with only images in them
         return
     
-
+    match = re.search(r'\bgapplebees\b',message.content.lower())
+    
     #role assign
     if message.content[:7] == '+addcar' and message.guild.id == config['server_id']: #checks if addcar command is inputed. only works on r/rx7. TODO: move role adding to function to support multiple servers
 
@@ -132,8 +141,20 @@ async def on_message(message):
     elif message.content.lower() == "+iq": #checks if user has indicated they are dealing with a low IQ individual
             await message.channel.send("To be fair, you have to have a very high IQ to drive an FD RX-7.The car is extremely superior to any other modern supercar, and without a solid grasp of theoretical physics you can't even drive it. There's also it’s linear power delivery, which is deftly woven into it’s driving characterisation- it’s personal philosophy draws heavily from Italian designs, for instance. I personally understand this stuff; I have the intellectual capacity to truly appreciate the supreme handling, to realise that it’s not just good- it says something deep about LIFE. As a consequence people who dislike the FD truly ARE idiots- of course they wouldn't appreciate, for instance, the humour in the FD’s existential catchphrase “Boost in, Apex Seals out,” which itself is a cryptic reference to the tenuous balance between life and death. I'm smirking right now just imagining one of those addlepated simpletons scratching their heads in confusion as Yoichi Sato's genius design unfolds itself on the race track. What fools.. how I pity them. :joy: And yes, by the way, i DO have a FD tattoo. And no, you cannot see it. It's for the ladies' eyes only- and even then they have to demonstrate that they're within 5 IQ points of my own (preferably lower) beforehand. Nothin personnel kid :sunglasses:")
     
-    '''elif message.content.lower() == "gapplebees": #checks if user has typed in a stale maymay
-            await message.channel.send("DANGER!!! DANGEROUSLY UNFUNNY MEME DETECTED!!! EXTREME CAUTION ADVISED!!")'''
+    elif match: #checks if user has typed in a stale maymay
+            await message.channel.send("DANGER!!! DANGEROUSLY UNFUNNY MEME DETECTED!!! EXTREME CAUTION ADVISED!!")
+    
+    elif message.content.lower() == "<@!667799244987695104>" and "Heretic" in role_names :
+        await message.channel.send(phrases2[randrange(5)])
+    elif message.content.lower() == "rotorbot" and "Heretic" in role_names :
+        await message.channel.send(phrases2[randrange(5)])
+    elif message.content.lower() == "<@!667799244987695104>":
+        await message.channel.send(phrases[randrange(5)])
+    elif message.content.lower() == "rotorbot":
+        await message.channel.send(phrases[randrange(5)])
+
+    elif message.content.lower() == "+lewd": #checks if user has typed in a stale maymay
+            await message.channel.send("uhh, idk, i get mine from here\nhttps://discord.gg/drSMAdG")
     #Image Link Handler v0.4 - now ignores case
     firstLetter = message.content[0] #checks if first letter of a message is the invoking one. Can be configured from here.
     if firstLetter == "+": #if not invoking, request is thrown out
