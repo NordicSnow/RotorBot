@@ -1,3 +1,37 @@
+#)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>>>>>>>/           \\\>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>>>>)>>>         \\\+=>..   \\>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>>> )> (>>>>> )>>          \+=.   \\>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>>> > )>>>>>>>\>>>               \+<.  \\>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>> )   \>>>>      .)>=\\)))))((((\=>.  +=.  \\>>>>>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>>.> )>>>     .>=\)>>\\)>>>>>>>>((\>>((=(  \<.  \\>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>> )   \>\  .)\)>>)>>\\            \\>>/\>/\>   \<.  \>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>> (      .>\)>)>>     .)>)>)>).> .    \\>/>>\>     \=  \\>>>>>>>>>>>
+#)>>>>>>>>>>>> >     )\)>)>\   ).)>>>=\\\\\\<>>>>)    \>/>(\>      \=  \>>>>>>>>>         _           _          _            _            _           _               _          _       
+#)>>>>>>>>>>>>.>   ./)>\>>  ..)>>\))>>>>>>>>>>>(\>>>.   \>\>\>        \> /\>>>>>>        /\ \        /\ \       /\ \         /\ \         /\ \        / /\            /\ \       /\ \     
+#)>>>>>>>>>>>>+>  ./)>)>   )>>>\)>>>>>>>>>>>>>>>>>/\>>   )>)>/>  )>>>   /)  \>>>>       /  \ \      /  \ \      \_\ \       /  \ \       /  \ \      / /  \          /  \ \      \_\ \    
+#)>>>>>>>>>>>>+>  )\>)>   (\>\)>\\\\\\\\\\\\\\\\\\\>\>>   )>)>)>  \=\.)>. +> />>>      / /\ \ \    / /\ \ \     /\__ \     / /\ \ \     / /\ \ \    / / /\ \        / /\ \ \     /\__ \   
+#)>>>>>>>>>>>>+> )>)>)>  .)>>)>>                  )>>)>>.  )>)>>   )>>>>>> )>>>>>     / / /\ \_\  / / /\ \ \   / /_ \ \   / / /\ \ \   / / /\ \_\  / / /\ \ \      / / /\ \ \   / /_ \ \  
+#)>>>>>>>>>>>> > )>\)>  .)>>)>>>>>>>>>>>>>>>     .>>>+\>>  )>)>)   />>>>>>  >\)>>    / / /_/ / / / / /  \ \_\ / / /\ \ \ / / /  \ \_\ / / /_/ / / / / /\ \_\ \    / / /  \ \_\ / / /\ \ \ 
+#)>>>>>>>>>>>> ( )>>)>  +)>>)>>>>>>>>>>>>>\    .)>>>>>)>=  )>)>)>  ..(\\  .> )>>>   / / /__\/ / / / /   / / // / /  \/_// / /   / / // / /__\/ / / / /\ \ \___\  / / /   / / // / /  \/_/ 
+#)>>>>>>>>>>>> ) )>\>>  +\>>)>>>>>>>>>>>\    .)>>>>>>)>>\  )>)>)  +>>>>  )\ )>>>>  / / /_____/ / / /   / / // / /      / / /   / / // / /_____/ / / /  \ \ \__/ / / /   / / // / /        
+#)>>>>>>>>>>>> )>+>)>)>   )>>)>>>>>>>>\    .(>>>>>>>>)>>   )>)>>        / .)>>>>> / / /\ \ \  / / /___/ / // / /      / / /___/ / // / /\ \ \  / / /____\_\ \  / / /___/ / // / /         
+#)>>>>>>>>>>>>> > )>\/>   ))>>\>>>>>>    .(>>>>>>>>\)>>   )>)>)>      /\ )>>>>>>>/ / /  \ \ \/ / /____\/ //_/ /      / / /____\/ // / /  \ \ \/ / /__________\/ / /____\/ //_/ /          
+#)>>>>>>>>>>>>> )  \/>/>   +=>> \>(.....)>>>>>>>>\)>>=   )>)>)>     /\ )>>>>>>>>>\/_/    \_\/\/_________/ \_\/       \/_________/ \/_/    \_\/\/_____________/\/_________/ \_\/           
+#)>>>>>>>>>>>>> +>  \/>/\>   \)>>(/\>>>>>>>>>>\.)>>>   .)>)>)>    /\ )>>>>>>>>>>>
+#)>>>>>>>>>>>>>> \   \>\>/>>   /\)>>>>>>))>>>>>>>\   .)>)>\/   .+ .)>>>>>>>>>>>>>                          ~ a project by nordic for the r/rx7 community ~
+#)>>>>>>>>>>>>>> +>    \(\>/\>.      \/>\>\ \      )>>)>\)\  /\ .)>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>>>> )      \>/\>(\>>..         ..)>>\)>>\>\ )< .)>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>>>>> \        \=(\>>>((\\>>>>\\\))>>\)=\ .<  )>>>>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>>>>>  >  ))>>     \\==((((\\\\))>=\\  )<\ )>>>>>>>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>>>>>> +>  \>>...                   /<  )>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>>>>>>> +>  )>>>>>>.)>>>        .>\ .)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>>>>>>>>  > />>>>>> /<>     .>\ .))>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>>>>>>>>>> \  \\\\     .><\ .))>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>>>>>>>>>>>)>>>>>>=+\  .))>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>>>>>>>>>>>>>(\.)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 # libraries
 import os, re, discord, discord.utils, sqlite3, os.path, requests, json
 from discord.ext import commands
@@ -20,27 +54,32 @@ clientID=config["imgur_token"] #imgur api client ID
 
 client = discord.Client() #client object
 
+#project version number printed on documentation
+versionNum = "0.9.6"
+
 roleList = ["SA", "FB", "FC", "FD", "RX-8", "MX-5"] #list of roles available to assign via bot
+
+#cute catchprases rotorbot will parrot. can be as many or little as you want.
 phrases = ["Hello, how are you? (⌒o⌒)", "How can i help you today? (≧◡≦)", "whats up? （＾⊆＾）", "tell me a joke! ^o^", "Hope you're having a fantastic day! ヽ( ´ ∇ ｀ )ノ"]
-phrases2 = ["how goes the swap? not done yet? figures.", "in over your head? you can stop whenever you want <3", "i'll be happy to assist in the process of inserting a Mazda RE into any car. thank you for your consideration!", "its... so... heavy...", "i would be scared if i was your firewall...", "wasn't this supposed to be 'easy'? :wink:"]
+phrases2 = ["how goes the swap? not done yet? figures.", "in over your head? you can stop whenever you want <3", "i'll be happy to assist in the process of inserting a Mazda RE into any car. thank you for your consideration!", "its... so... heavy...", "i would be scared if i was your firewall...", "wasn't this supposed to be 'easy'? :wink:", "there isn't anything wrong with admitting that you're in over your head ;)"]
 
 
 #help document
-embed = discord.Embed(title="RotorBot Help", colour=discord.Colour(0x29aaca), description="this is the help document for RotorBot version 0.9")
+embed = discord.Embed(title="RotorBot Help", colour=discord.Colour(0x29aaca), description=("this is the help document for RotorBot version " + versionNum))
 embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
 embed.set_author(name="RotorBot", url="https://github.com/NordicSnow/RotorBot", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
-embed.set_footer(text="rotorbot v0.9", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
+embed.set_footer(text=("rotorbot " + versionNum), icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
 embed.add_field(name="Role Picker", value="To add a new role, use the '+addcar' command followed by one of these options:\n***SA***\n***FB***\n***FC***\n***FD***\n***RX-8***\n***MX-5***")
 embed.add_field(name="Show an image of a user's car", value="To see a given user's car, just type in a '+' followed by their username, eg '+nordic'.")
-embed.add_field(name="Add yourself to the image linker", value="To add or edit a user image saved in the image linker, use the command '+addimage " + '"[description]"' +"' and attach your image to the message. Make sure to take note of the quotes on the description, which are required.")
+embed.add_field(name="Add or edit image linker data", value="To add or edit a user image saved in the image linker, use the command '+addimage [your description here]' and attach your image to the message. This command can also be used to edit an existing dataset.")
 
 #for public servers not using role picker
-embedNo7 = discord.Embed(title="RotorBot Help", colour=discord.Colour(0x29aaca), description="this is the help document for RotorBot version 0.9")
+embedNo7 = discord.Embed(title="RotorBot Help", colour=discord.Colour(0x29aaca), description=("this is the help document for RotorBot version " + versionNum))
 embedNo7.set_thumbnail(url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
 embedNo7.set_author(name="RotorBot", url="https://github.com/NordicSnow/RotorBot", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
-embedNo7.set_footer(text="rotorbot v0.9", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
+embedNo7.set_footer(text=("rotorbot " + versionNum), icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
 embedNo7.add_field(name="Show an image of a user's car", value="To see a given user's car, just type in a '+' followed by their username, eg '+nordic'.")
-embedNo7.add_field(name="Add yourself to the image linker", value="To add or edit a user image saved in the image linker, use the command '+addimage " + '"[description]"' +"' and attach your image to the message. Make sure to take note of the quotes on the description, which are required.")
+embedNo7.add_field(name="Add or edit image linker data", value="To add or edit a user image saved in the image linker, use the command '+addimage [your description here]' and attach your image to the message. This command can also be used to edit an existing dataset.")
 #shows console ready message and changes game status
 @client.event
 async def on_ready():
@@ -60,21 +99,50 @@ async def on_member_join(member):
 @client.event
 async def on_message(message):
     
+    if message.content == "": #ignores messages with only images in them
+        return
+    
+    #pulls all roles for a given user
     try:
         role_names = [role.name for role in message.author.roles]
     except:
         return
-    uid = (message.author.id,)
-    text = message.content.split()
+    uid = (message.author.id,) #grabs Discord UID from message author
+
     if message.author == client.user: # prevents recursive loop
         return
-    if message.content == "": #ignores messages with only images in them
+
+    
+
+    #regex for gapplebees statement to inform users of their error
+    match = re.search(r'\bgapplebees\b',message.content.lower())
+
+    
+    if match: #checks if user has typed in a stale maymay
+            await message.channel.send("DANGER!!! DANGEROUSLY UNFUNNY MEME DETECTED!!! EXTREME CAUTION ADVISED!!")
+    
+    elif client.user in message.mentions and "Heretic" in role_names :
+        await message.channel.send(phrases2[randrange(len(phrases2))])
+    elif message.content.lower() == "rotorbot" and "Heretic" in role_names :
+        await message.channel.send(phrases2[randrange(len(phrases2))])
+    elif client.user in message.mentions:
+        await message.channel.send(phrases[randrange(len(phrases))])
+    elif message.content.lower() == "rotorbot":
+        await message.channel.send(phrases[randrange(len(phrases))])
+
+    ###############################
+    ##         COMMANDS          ##
+    ###############################
+
+    #checks if message invokes the command symbol. If not it stops here.
+    if message.content[0] == config['invocation_symbol']:
+        commandName = message.content.lower()[1:]
+        text = commandName.split()
+    else:
         return
     
-    match = re.search(r'\bgapplebees\b',message.content.lower())
-    
     #role assign
-    if message.content[:7] == '+addcar' and message.guild.id == config['server_id']: #checks if addcar command is inputed. only works on r/rx7. TODO: move role adding to function to support multiple servers
+    if commandName[:6] == 'addcar' and message.guild.id == config['server_id']: #checks if addcar command is inputed. only works on r/rx7. TODO: move role adding to function to support multiple servers
 
         #todo: make this section less of a bodge
         if message.content[8:].upper() == "RX8": #checks if command is "rx8", as the actual name of the role is "RX-8"
@@ -98,14 +166,11 @@ async def on_message(message):
     
 
     #add image command
-    elif text[0].lower() == '+addimage': #checks to see if command is invoked
-        imgur = text[1] #pulls second word from command
-        descList = re.findall(r'"([^"]*)"', message.content) #regex to check for words in quotes to pull description data
+    elif text[0].lower() == 'addimage': #checks to see if command is invoked
         
-        try:
-            desc = descList[0] #makes sure inputed data includes description in quotes
-        except IndexError: #handles error and informs user
-            await message.channel.send("~uh oh! i've encountered a syntax error! (¤﹏¤)\nremember, "+message.author.name+", the command goes '+addimage [direct imgur link] " + '"[description]"' +"'")
+        desc = message.content[10:] #gets image description
+        if desc == "": #handles error and informs user
+            await message.channel.send("~uh oh! i've encountered a syntax error! (¤﹏¤)\nremember, "+message.author.name+", the command goes '+addimage [your text here]")
             return #ends add image command to prevent exceptions from occuring due to bad data
         
         if message.attachments == []: #checks to make sure that user has included an attachment, and informs them if not
@@ -130,7 +195,7 @@ async def on_message(message):
             await message.channel.send("Error! Imgur Upload Failed! Either Imgur is down or there is a problem with your image.\nfor debugging: http " + str(response)) #sends confirmation
 
     #help command
-    elif message.content.lower() == "+help": #checks if user typed in help command
+    elif text[0].lower() == "help": #checks if user typed in help command
         if message.guild.id == config['server_id']:
             await message.channel.send("~this is what you need to say to control me, master (´･ω･`)")
             await message.channel.send(embed=embed) #sends help documentation embed
@@ -138,26 +203,35 @@ async def on_message(message):
             await message.channel.send("~this is what you need to say to control me, master (´･ω･`)")
             await message.channel.send(embed=embedNo7) #sends help documentation embed
 
-    elif message.content.lower() == "+iq": #checks if user has indicated they are dealing with a low IQ individual
+    elif text[0].lower() == "iq": #checks if user has indicated they are dealing with a low IQ individual
             await message.channel.send("To be fair, you have to have a very high IQ to drive an FD RX-7.The car is extremely superior to any other modern supercar, and without a solid grasp of theoretical physics you can't even drive it. There's also it’s linear power delivery, which is deftly woven into it’s driving characterisation- it’s personal philosophy draws heavily from Italian designs, for instance. I personally understand this stuff; I have the intellectual capacity to truly appreciate the supreme handling, to realise that it’s not just good- it says something deep about LIFE. As a consequence people who dislike the FD truly ARE idiots- of course they wouldn't appreciate, for instance, the humour in the FD’s existential catchphrase “Boost in, Apex Seals out,” which itself is a cryptic reference to the tenuous balance between life and death. I'm smirking right now just imagining one of those addlepated simpletons scratching their heads in confusion as Yoichi Sato's genius design unfolds itself on the race track. What fools.. how I pity them. :joy: And yes, by the way, i DO have a FD tattoo. And no, you cannot see it. It's for the ladies' eyes only- and even then they have to demonstrate that they're within 5 IQ points of my own (preferably lower) beforehand. Nothin personnel kid :sunglasses:")
     
-    elif match: #checks if user has typed in a stale maymay
-            await message.channel.send("DANGER!!! DANGEROUSLY UNFUNNY MEME DETECTED!!! EXTREME CAUTION ADVISED!!")
-    
-    elif message.content.lower() == "<@!667799244987695104>" and "Heretic" in role_names :
-        await message.channel.send(phrases2[randrange(5)])
-    elif message.content.lower() == "rotorbot" and "Heretic" in role_names :
-        await message.channel.send(phrases2[randrange(5)])
-    elif message.content.lower() == "<@!667799244987695104>":
-        await message.channel.send(phrases[randrange(5)])
-    elif message.content.lower() == "rotorbot":
-        await message.channel.send(phrases[randrange(5)])
 
-    elif message.content.lower() == "+lewd": #checks if user has typed in a stale maymay
-            await message.channel.send("uhh, idk, i get mine from here\nhttps://discord.gg/drSMAdG")
+    elif text[0].lower() == "lewd": #meme statement
+        await message.channel.send("uhh, idk, i get mine from here\nhttps://discord.gg/drSMAdG")
+
+    elif text[0].lower() == "avatar": #checks if user wants to see their avatar
+        if len(message.mentions) == 0: #checks to see if a user is mentioned, if not it will just show the author's avatar
+            titleName = message.author.name + "'s Avatar:" #creates message for embed
+            photo = discord.Embed(colour=discord.Colour(0x29aaca)) #creates embed to send avatar in
+            await message.channel.send("looking cute! (^L^)") #responds with success message
+            #sets avatar image, username, and shows what bot handled the command
+            photo.set_image(url=str(message.author.avatar_url))
+            photo.set_author(name=titleName, icon_url=message.author.avatar_url)
+            photo.set_footer(text=("rotorbot v" + versionNum), icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
+            await message.channel.send(embed=photo)
+        else: #if a user is mentioned
+            titleName = message.mentions[0].name + "'s Avatar:" #grabs username as embed title
+            photo = discord.Embed(title=titleName, colour=discord.Colour(0x29aaca)) #created embed
+            await message.channel.send("fancy! ＼(^-^)／") #sends success message
+            #sets target's avatar, username, and shows what bot handled the command
+            photo.set_image(url=str(message.mentions[0].avatar_url))
+            photo.set_author(name="request by " + message.author.name, icon_url=message.author.avatar_url)
+            photo.set_footer(text=("rotorbot v" + versionNum), icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
+            await message.channel.send(embed=photo)
     #Image Link Handler v0.4 - now ignores case
     firstLetter = message.content[0] #checks if first letter of a message is the invoking one. Can be configured from here.
-    if firstLetter == "+": #if not invoking, request is thrown out
+    if firstLetter == config['invocation_symbol']: #if not invoking, request is thrown out
         
         commandName = (message.content.lower()[1:],) # checks command name
         c.execute('SELECT * FROM images WHERE Username =?', commandName) #compares command name amoung populated users
