@@ -1,4 +1,4 @@
-# RotorBot v0.8
+# RotorBot v0.9
 
 ## If you just want to add the car linking to your server, you can use the [version I host here](https://discordapp.com/api/oauth2/authorize?client_id=667799244987695104&permissions=268815424&scope=bot)
 
