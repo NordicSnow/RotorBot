@@ -33,8 +33,7 @@
 #)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # libraries
-import os, re, discord, discord.utils, sqlite3, os.path, requests, json
-from discord.ext import commands
+import os, re, discord, discord.utils, sqlite3, os.path, requests, json, asyncio
 from random import randrange
 
 #io
@@ -55,12 +54,12 @@ clientID=config["imgur_token"] #imgur api client ID
 client = discord.Client() #client object
 
 #project version number printed on documentation
-versionNum = "0.9.6"
+versionNum = "0.9.7"
 
 roleList = ["SA", "FB", "FC", "FD", "RX-8", "MX-5"] #list of roles available to assign via bot
 
 #cute catchprases rotorbot will parrot. can be as many or little as you want.
-phrases = ["Hello, how are you? (⌒o⌒)", "How can i help you today? (≧◡≦)", "whats up? （＾⊆＾）", "tell me a joke! ^o^", "Hope you're having a fantastic day! ヽ( ´ ∇ ｀ )ノ"]
+phrases = ["Hello, how are you? (⌒o⌒)", "How can i help you today? (≧◡≦)", "whats up? （＾⊆＾）", "tell me a joke! ^o^", "Hope you're having a fantastic day! ヽ( ´ ∇ ｀ )ノ", "You're doing quite well for yourself"]
 phrases2 = ["how goes the swap? not done yet? figures.", "in over your head? you can stop whenever you want <3", "i'll be happy to assist in the process of inserting a Mazda RE into any car. thank you for your consideration!", "its... so... heavy...", "i would be scared if i was your firewall...", "wasn't this supposed to be 'easy'? :wink:", "there isn't anything wrong with admitting that you're in over your head ;)"]
 
 
@@ -88,6 +87,10 @@ async def on_ready():
 
 #welcomes users, mentions them to grab attention, and points them to the welcome channel
 @client.event
+
+    ###############################
+    ##      Member Join          ##
+    ###############################
 async def on_member_join(member):
 
     if member.guild.id == config['server_id']: #checks to see if user is joining r/rx7 discord. this allows for one image db to run on multiple servers.
@@ -107,19 +110,33 @@ async def on_message(message):
         role_names = [role.name for role in message.author.roles]
     except:
         return
+    
+    role_names.pop(0)
+    
     uid = (message.author.id,) #grabs Discord UID from message author
 
     if message.author == client.user: # prevents recursive loop
         return
 
     
-
-    #regex for gapplebees statement to inform users of their error
-    match = re.search(r'\bgapplebees\b',message.content.lower())
+    ###############################
+    ##   NON-SPECIFIC COMMANDS   ##
+    ###############################
+    #regex for 'alfa' statement to inform users of their terrible taste
+    match = re.search(r'alfa',message.content.lower())
 
     
-    if match: #checks if user has typed in a stale maymay
-            await message.channel.send("DANGER!!! DANGEROUSLY UNFUNNY MEME DETECTED!!! EXTREME CAUTION ADVISED!!")
+    if match and message.guild.id == config['server_id']: #checks if user has typed in a terribad car brand
+        if len(role_names) == 0 and message.channel.id != 661377126171279374:
+            role = discord.utils.get(message.guild.roles, name="Muted") #gets role ID from server
+            await message.author.add_roles(role)
+            await message.channel.send("WARNING! UNAUTHORIZED BRAND DISCUSSION OCCURING! PUNISHING WHITENAME!")
+
+            await asyncio.sleep(600)
+            await message.author.remove_roles(role)
+            await message.channel.send("punishment revoked!")
+
+        
     
     elif client.user in message.mentions and "Heretic" in role_names :
         await message.channel.send(phrases2[randrange(len(phrases2))])
@@ -162,7 +179,7 @@ async def on_message(message):
         try:
             await message.author.add_roles(role) #assigns role to user
         except UnboundLocalError: #if role doesn't exist, this exception is thrown
-            await message.channel.send("~i've encountered an error, senpai! try assigning a role that exists! (>人<)\n*for a list of available roles, type in '+help'!* (^ｰ^)") #informs user there was a problem
+            await message.channel.send("~senpai, i've encountered an error! try assigning a role that exists! (>人<)\n*for a list of available roles, type in '+help'!* (^ｰ^)") #informs user there was a problem
     
 
     #add image command
@@ -203,7 +220,7 @@ async def on_message(message):
             await message.channel.send("~this is what you need to say to control me, master (´･ω･`)")
             await message.channel.send(embed=embedNo7) #sends help documentation embed
 
-    elif text[0].lower() == "iq": #checks if user has indicated they are dealing with a low IQ individual
+    elif text[0].lower() == "iq" and message.guild.id != 551147201619951657: #checks if user has indicated they are dealing with a low IQ individual
             await message.channel.send("To be fair, you have to have a very high IQ to drive an FD RX-7.The car is extremely superior to any other modern supercar, and without a solid grasp of theoretical physics you can't even drive it. There's also it’s linear power delivery, which is deftly woven into it’s driving characterisation- it’s personal philosophy draws heavily from Italian designs, for instance. I personally understand this stuff; I have the intellectual capacity to truly appreciate the supreme handling, to realise that it’s not just good- it says something deep about LIFE. As a consequence people who dislike the FD truly ARE idiots- of course they wouldn't appreciate, for instance, the humour in the FD’s existential catchphrase “Boost in, Apex Seals out,” which itself is a cryptic reference to the tenuous balance between life and death. I'm smirking right now just imagining one of those addlepated simpletons scratching their heads in confusion as Yoichi Sato's genius design unfolds itself on the race track. What fools.. how I pity them. :joy: And yes, by the way, i DO have a FD tattoo. And no, you cannot see it. It's for the ladies' eyes only- and even then they have to demonstrate that they're within 5 IQ points of my own (preferably lower) beforehand. Nothin personnel kid :sunglasses:")
     
 
