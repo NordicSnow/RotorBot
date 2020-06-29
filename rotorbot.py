@@ -54,9 +54,9 @@ clientID=config["imgur_token"] #imgur api client ID
 client = discord.Client() #client object
 
 #project version number printed on documentation
-versionNum = "0.9.7"
+versionNum = "0.9.8"
 
-roleList = ["SA", "FB", "FC", "FD", "RX-8", "MX-5"] #list of roles available to assign via bot
+roleList = ["SA", "FB", "FC", "FD", "RX-8", "MX-5", "gamer"] #list of roles available to assign via bot
 
 #cute catchprases rotorbot will parrot. can be as many or little as you want.
 phrases = ["Hello, how are you? (⌒o⌒)", "How can i help you today? (≧◡≦)", "whats up? （＾⊆＾）", "tell me a joke! ^o^", "Hope you're having a fantastic day! ヽ( ´ ∇ ｀ )ノ", "You're doing quite well for yourself"]
@@ -68,9 +68,9 @@ embed = discord.Embed(title="RotorBot Help", colour=discord.Colour(0x29aaca), de
 embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
 embed.set_author(name="RotorBot", url="https://github.com/NordicSnow/RotorBot", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
 embed.set_footer(text=("rotorbot " + versionNum), icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
-embed.add_field(name="Role Picker", value="To add a new role, use the '+addcar' command followed by one of these options:\n***SA***\n***FB***\n***FC***\n***FD***\n***RX-8***\n***MX-5***")
+embed.add_field(name="Role Picker", value="To add a new role, use the '+addrole' command followed by one of these options:\n***SA***\n***FB***\n***FC***\n***FD***\n***RX-8***\n***MX-5***\n***GAMER***")
 embed.add_field(name="Show an image of a user's car", value="To see a given user's car, just type in a '+' followed by their username, eg '+nordic'.")
-embed.add_field(name="Add or edit image linker data", value="To add or edit a user image saved in the image linker, use the command '+addimage [your description here]' and attach your image to the message. This command can also be used to edit an existing dataset.")
+embed.add_field(name="Add or edit image linker data", value="To add or edit a user image saved in the image linker, use the command '+addcar ``your description here``' and attach your image to the message. This command can also be used to edit an existing dataset. To just change the description you do not need to attach an image.")
 
 #for public servers not using role picker
 embedNo7 = discord.Embed(title="RotorBot Help", colour=discord.Colour(0x29aaca), description=("this is the help document for RotorBot version " + versionNum))
@@ -78,7 +78,7 @@ embedNo7.set_thumbnail(url="https://cdn.discordapp.com/avatars/66779924498769510
 embedNo7.set_author(name="RotorBot", url="https://github.com/NordicSnow/RotorBot", icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
 embedNo7.set_footer(text=("rotorbot " + versionNum), icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
 embedNo7.add_field(name="Show an image of a user's car", value="To see a given user's car, just type in a '+' followed by their username, eg '+nordic'.")
-embedNo7.add_field(name="Add or edit image linker data", value="To add or edit a user image saved in the image linker, use the command '+addimage [your description here]' and attach your image to the message. This command can also be used to edit an existing dataset.")
+embedNo7.add_field(name="Add or edit image linker data", value="To add or edit a user image saved in the image linker, use the command '+addcar ``your description here``' and attach your image to the message. This command can also be used to edit an existing dataset. To just change the description you do not need to attach an image.")
 #shows console ready message and changes game status
 @client.event
 async def on_ready():
@@ -123,28 +123,27 @@ async def on_message(message):
     ##   NON-SPECIFIC COMMANDS   ##
     ###############################
     #regex for 'alfa' statement to inform users of their terrible taste
-    match = re.search(r'alfa',message.content.lower())
+    match = re.search(r'\basexual\b',message.content.lower())
 
     
     if match and message.guild.id == config['server_id']: #checks if user has typed in a terribad car brand
-        if len(role_names) == 0 and message.channel.id != 661377126171279374:
-            role = discord.utils.get(message.guild.roles, name="Muted") #gets role ID from server
-            await message.author.add_roles(role)
-            await message.channel.send("WARNING! UNAUTHORIZED BRAND DISCUSSION OCCURING! PUNISHING WHITENAME!")
+        role = discord.utils.get(message.guild.roles, name="Muted") #gets role ID from server
+        await message.author.add_roles(role)
+        await message.channel.send("incel detection algorithm activated! deploying self reflection period!")
 
-            await asyncio.sleep(600)
-            await message.author.remove_roles(role)
-            await message.channel.send("punishment revoked!")
+        await asyncio.sleep(30) #wait time for cooldown
+        await message.author.remove_roles(role) #removal
+        await message.channel.send("punishment revoked!")
 
         
-    
-    elif client.user in message.mentions and "Heretic" in role_names :
+    #sends cute message to user if called on or mentioned.
+    elif client.user in message.mentions and "Heretic" in role_names : #checks if Heretic role mentions rotorbot
         await message.channel.send(phrases2[randrange(len(phrases2))])
-    elif message.content.lower() == "rotorbot" and "Heretic" in role_names :
+    elif message.content.lower() == "rotorbot" and "Heretic" in role_names : #checks if heretic calls to rotorbot
         await message.channel.send(phrases2[randrange(len(phrases2))])
-    elif client.user in message.mentions:
+    elif client.user in message.mentions: #checks if user mentions rotorbot
         await message.channel.send(phrases[randrange(len(phrases))])
-    elif message.content.lower() == "rotorbot":
+    elif message.content.lower() == "rotorbot": # checks if user calls to rotorbot
         await message.channel.send(phrases[randrange(len(phrases))])
 
     ###############################
@@ -159,39 +158,58 @@ async def on_message(message):
         return
     
     #role assign
-    if commandName[:6] == 'addcar' and message.guild.id == config['server_id']: #checks if addcar command is inputed. only works on r/rx7. TODO: move role adding to function to support multiple servers
+    if text[0].lower() == 'addrole' and message.guild.id == config['server_id']: #checks if addcar command is inputed. only works on r/rx7. TODO: move role adding to function to support multiple servers
+        if message.author.id != 701871518530928701: #bodge code that literally just bans Rotorican from using the role picker
+            if len(text) < 2: #checks if there is a role listed afterwards
+                await message.channel.send("uhhh, you didn't type anything in? tell me what you own and i'll add it! ٩◔‿◔۶") #informs user there was a problem
+                return
+            else:
+                #todo: make this section less of a bodge
+                if text[1].upper() == "RX8": #checks if command is "rx8", as the actual name of the role is "RX-8"
+                    role = discord.utils.get(message.guild.roles, name="RX-8") #gets role ID from server
+                    await message.channel.send("~role RX-8 added! welcome! ≧◡≦ <3")
 
-        #todo: make this section less of a bodge
-        if message.content[8:].upper() == "RX8": #checks if command is "rx8", as the actual name of the role is "RX-8"
-            role = discord.utils.get(message.guild.roles, name="RX-8") #gets role ID from server
-            await message.channel.send("~role RX-8 added! welcome! ≧◡≦ <3")
+                if text[1].upper() == "MX5":#checks if command is "mx5", as the actual name of the role is "RX-8"
+                    role = discord.utils.get(message.guild.roles, name="MX-5") #gets role ID from server
+                    await message.channel.send("~role MX-5 added! welcome! ≧◡≦ <3")
+                if text[1].lower() == "gamer":#checks if command is "gamer"
+                    if "gamer" in role_names:#checks if user already has role
+                        role = discord.utils.get(message.guild.roles, name="gamer") #id so, it is set and removed.
+                        await message.channel.send("awww, sorry to see you go. i've removed the role so you won't see any more pings. you can always re-add it if you want back in!")
+                        await message.author.remove_roles(role)
+                        return
+                    else: #else it is applied
+                        role = discord.utils.get(message.guild.roles, name="gamer") #gets role ID from server
+                        await message.channel.send("~welcome pro minecrafter! you now are recieving pings for vidya gaming related events! to opt-out, just run the command again. ≧◡≦ <3")
 
-        if message.content[8:].upper() == "MX5":#checks if command is "mx5", as the actual name of the role is "RX-8"
-            role = discord.utils.get(message.guild.roles, name="MX-5") #gets role ID from server
-            await message.channel.send("~role MX-5 added! welcome! ≧◡≦ <3")
+                #Assigns roles. Add options to "roleList"
+                for i in range(len(roleList)):
+                    if (text[1].upper()) == roleList[i]: #checks input against list "roleList"
+                        role = discord.utils.get(message.guild.roles, name=roleList[i]) #gets role ID from server
+                        await message.channel.send("~role " +roleList[i] + " added! welcome! ≧◡≦ <3")
 
-        #Assigns roles. Add options to "roleList"
-        for i in range(len(roleList)):
-            if (message.content[8:].upper()) == roleList[i]: #checks input against list "roleList"
-                role = discord.utils.get(message.guild.roles, name=roleList[i]) #gets role ID from server
-                await message.channel.send("~role " +roleList[i] + " added! welcome! ≧◡≦ <3")
-
-        try:
-            await message.author.add_roles(role) #assigns role to user
-        except UnboundLocalError: #if role doesn't exist, this exception is thrown
-            await message.channel.send("~senpai, i've encountered an error! try assigning a role that exists! (>人<)\n*for a list of available roles, type in '+help'!* (^ｰ^)") #informs user there was a problem
-    
+                try:
+                    await message.author.add_roles(role) #assigns role to user
+                except UnboundLocalError: #if role doesn't exist, this exception is thrown
+                    await message.channel.send("~senpai, i've encountered an error! try assigning a role that exists! (>人<)\n*for a list of available roles, type in '+help'!* (^ｰ^)") #informs user there was a problem
+            
 
     #add image command
-    elif text[0].lower() == 'addimage': #checks to see if command is invoked
+    elif text[0].lower() == 'addcar': #checks to see if command is invoked
         
         desc = message.content[10:] #gets image description
         if desc == "": #handles error and informs user
-            await message.channel.send("~uh oh! i've encountered a syntax error! (¤﹏¤)\nremember, "+message.author.name+", the command goes '+addimage [your text here]")
+            await message.channel.send("~uh oh! i've encountered a syntax error! (¤﹏¤)\nremember, "+message.author.name+", the command goes '+addimage ``your text here``'. A description ***MUST*** be included!")
             return #ends add image command to prevent exceptions from occuring due to bad data
         
-        if message.attachments == []: #checks to make sure that user has included an attachment, and informs them if not
-            await message.channel.send("~uh oh! there isn't an image for me to upload\nremember, "+message.author.name+", the image has to be attached to the invoking message!")
+        if message.attachments == []: #checks to make sure that user has included an attachment, and updates their record without an image
+            c.execute('SELECT * FROM images WHERE UID =?', uid) #pulls user information
+            currentData = (c.fetchone())
+            if currentData == None: #checks to see if user exists in the database
+                await message.channel.send("hmm, i can't seem to find a record on you. i can make one, but to do that i need an image. attach one and i'll see what i can do. v( ‘.’ )v") #sends error message
+            else:
+                c.execute('UPDATE images SET description = ? WHERE uid = ? ', (desc, message.author.id)) #updates existing information
+                await message.channel.send("~~thank you!!! ^>^\nyour data has been updated! have a nice day! {◕ ◡ ◕}") #sends confirmation
             return #ends add image command to prevent exceptions from occuring due to bad data
 
 
