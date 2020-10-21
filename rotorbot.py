@@ -33,8 +33,8 @@
 #)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # libraries
-import os, re, discord, discord.utils, sqlite3, os.path, requests, json, asyncio
-from random import randrange
+import os, re, discord, discord.utils, sqlite3, os.path, requests, json, asyncio, random
+from discord import user
 
 #io
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)) #directs to exact file
@@ -54,7 +54,7 @@ clientID=config["imgur_token"] #imgur api client ID
 client = discord.Client() #client object
 
 #project version number printed on documentation
-versionNum = "0.9.9"
+versionNum = "0.9.10"
 
 roleList = ["SA", "FB", "FC", "FD", "RX-8", "MX-5", "gamer"] #list of roles available to assign via bot
 locationList =["Northeast", "Southeast", "Midwest", "Southwest", "Northwest", "Europe", "Australia/New Zealand", "Canada"]
@@ -62,7 +62,8 @@ locationList =["Northeast", "Southeast", "Midwest", "Southwest", "Northwest", "E
 #cute catchprases rotorbot will parrot. can be as many or little as you want.
 phrases = ["Hello, how are you? (⌒o⌒)", "How can i help you today? (≧◡≦)", "whats up? （＾⊆＾）", "tell me a joke! ^o^", "Hope you're having a fantastic day! ヽ( ´ ∇ ｀ )ノ", "You're doing quite well for yourself"]
 phrases2 = ["Why do you even check these? it's like you enjoy getting insulted you perv!", "Sorry can't talk, I wouldn't want you to be late to your recall appointment!", "Don't you have a corvette to be lusting after or something?", "Roses are red, violets are blue, my car is faster and lighter too", "Sorry, but I think your engine is in another castle!", "I've never met a valve I've liked. You're not really changing my mind on that."]
-
+phrases3 = ["Apologies, the ticket window is over there." , "Sorry, I’m not authorised to speak with passengers.", "If you have a question or complaint, please take it up with the transit authority.", "Please be prepared to pay your fare!"]
+rallyImages =["https://i.imgur.com/EWeIQuS.jpg"]
 
 #help document
 embed = discord.Embed(title="RotorBot Help", colour=discord.Colour(0x29aaca), description=("this is the help document for RotorBot version " + versionNum))
@@ -72,6 +73,7 @@ embed.set_footer(text=("rotorbot " + versionNum), icon_url="https://cdn.discorda
 embed.add_field(name="Role Picker", value="To add a new role, use the '+addrole' command followed by one of these options:\n***SA***\n***FB***\n***FC***\n***FD***\n***RX-8***\n***MX-5***\n***GAMER***\n There also are location based roles:\n***Northeast***\n***Southeast***\n***Midwest***\n***Northwest***\n***Southwest***\n***Canada***\n***Europe***\n***Australia***\n***New Zealand (or just NZ)***")
 embed.add_field(name="Show an image of a user's car", value="To see a given user's car, just type in a '+' followed by their username, eg '+nordic'.")
 embed.add_field(name="Add or edit image linker data", value="To add or edit a user image saved in the image linker, use the command '+addcar ``your description here``' and attach your image to the message. This command can also be used to edit an existing dataset. To just change the description you do not need to attach an image. Similarly, to change the image you don't have to include a description.")
+embed.add_field(name="View user list", value="To see a list of viewable cars people have saved, type ``+carlist`` and a full list will be DMed to you!")
 
 #for public servers not using role picker
 embedNo7 = discord.Embed(title="RotorBot Help", colour=discord.Colour(0x29aaca), description=("this is the help document for RotorBot version " + versionNum))
@@ -80,6 +82,7 @@ embedNo7.set_author(name="RotorBot", url="https://github.com/NordicSnow/RotorBot
 embedNo7.set_footer(text=("rotorbot " + versionNum), icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
 embedNo7.add_field(name="Show an image of a user's car", value="To see a given user's car, just type in a '+' followed by their username, eg '+nordic'.")
 embedNo7.add_field(name="Add or edit image linker data", value="To add or edit a user image saved in the image linker, use the command '+addcar ``your description here``' and attach your image to the message. This command can also be used to edit an existing dataset. To just change the description you do not need to attach an image. Similarly, to change the image you don't have to include a description.")
+embedNo7.add_field(name="View user list", value="To see a list of viewable cars people have saved, type ``+carlist`` and a full list will be DMed to you!")
 #shows console ready message and changes game status
 @client.event
 async def on_ready():
@@ -103,7 +106,7 @@ async def on_member_join(member):
 @client.event
 async def on_message(message):
     
-    if message.content == "": #ignores messages with only images in them
+    if message.content == "" or message.content == "+": #ignores messages with only images in them
         return
     
     #pulls all roles for a given user
@@ -125,17 +128,11 @@ async def on_message(message):
     ##   NON-SPECIFIC COMMANDS   ##
     ###############################
     #regex for 'alfa' statement to inform users of their terrible taste
-    match = re.search(r'\basexual\b',message.content.lower())
+    match = re.search(r'\brally art\b',message.content.lower())
 
     
-    if match and message.guild.id == config['server_id']: #checks if user has typed in a terribad car brand
-        role = discord.utils.get(message.guild.roles, name="Muted") #gets role ID from server
-        await message.author.add_roles(role)
-        await message.channel.send("incel detection algorithm activated! deploying self reflection period!")
-
-        await asyncio.sleep(30) #wait time for cooldown
-        await message.author.remove_roles(role) #removal
-        await message.channel.send("punishment revoked!")
+    if match: #checks if user has typed in a terribad car brand
+        await message.channel.send("rally art? you mean like this?\n" + rallyImages[random.randint(1, (len(rallyImages)-1))])
 
 
         
@@ -143,14 +140,18 @@ async def on_message(message):
     if client.user in message.mentions: #checks if user mentions rotorbot
         if "Heretic" in role_names or "I <3 LS" in role_names:
 
-            await message.channel.send(phrases2[randrange(len(phrases2))])
+            await message.channel.send(phrases2[random.randint(1, (len(phrases2)-1))])
+        elif "Busrider" in role_names:
+            await message.channel.send(phrases3[random.randint(1, (len(phrases3)-1))])
         else:
-            await message.channel.send(phrases[randrange(len(phrases))])
+            await message.channel.send(phrases[random.randint(1, (len(phrases)-1))])
     elif message.content.lower() == "rotorbot": # checks if user calls to rotorbot
         if "Heretic" in role_names or "I <3 LS" in role_names:
-            await message.channel.send(phrases2[randrange(len(phrases2))])
+            await message.channel.send(phrases2[random.randint(1, (len(phrases2)-1))])
+        elif "Busrider" in role_names:
+            await message.channel.send(phrases3[random.randint(1, (len(phrases3)-1))])
         else:
-            await message.channel.send(phrases[randrange(len(phrases))])
+            await message.channel.send(phrases[random.randint(1, (len(phrases)-1))])
 
     ###############################
     ##         COMMANDS          ##
@@ -278,6 +279,9 @@ async def on_message(message):
                         c.execute('UPDATE images SET link = ? WHERE uid = ? ', (jsonData['data']['link'], message.author.id)) #updates existing information
                         await message.channel.send("~~thank you!!! ^>^\nyour data has been updated! have a nice day! {◕ ◡ ◕}") #sends confirmation
                         return
+                elif str(response) == "<Response [417]>": #checks if 417, which is probably too large for the API to handle
+                    await message.channel.send("Error! Imgur Upload Failed! HTTP Status Code 417: Bad Header! This is probably happening because the image you are uploading is too large to be processed by the API. Make sure your image is smaller than 10mb and try again! ") #sends confirmation
+                    return
                 else: #if upload isn't sucessful, throws an error
                     await message.channel.send("Error! Imgur Upload Failed! Either Imgur is down or there is a problem with your image.\nfor debugging: http " + str(response)) #sends confirmation
                     return
@@ -306,6 +310,9 @@ async def on_message(message):
             else:
                 c.execute('UPDATE images SET description = ?, link = ? WHERE uid = ? ', (desc, jsonData['data']['link'], message.author.id)) #updates existing information
                 await message.channel.send("~~thank you!!! ^>^\nyour data has been updated! have a nice day! {◕ ◡ ◕}") #sends confirmation
+        elif str(response) == "<Response [417]>": #checks if 417, which is probably too large for the API to handle
+            await message.channel.send("Error! Imgur Upload Failed! HTTP Status Code 417: Bad Header! This is probably happening because the image you are uploading is too large to be processed by the API. Make sure your image is smaller than 10mb and try again! ") #sends confirmation
+            return
         else: #if upload isn't sucessful, throws an error
             await message.channel.send("Error! Imgur Upload Failed! Either Imgur is down or there is a problem with your image.\nfor debugging: http " + str(response)) #sends confirmation
             return
@@ -345,6 +352,52 @@ async def on_message(message):
             photo.set_author(name="request by " + message.author.name, icon_url=message.author.avatar_url)
             photo.set_footer(text=("rotorbot v" + versionNum), icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
             await message.channel.send(embed=photo)
+
+    #lists all users in image database
+    elif text[0].lower() == "carlist":
+        userString = '**' #string for users
+        userString1 = '**' #seperate string for usernames over 1000 characters
+        c.execute('SELECT Username FROM images') #grabs all usernames from image table
+        data = c.fetchall()
+
+        listCounter = 0 #counter for list
+        for row in data: #reads all rows
+            listCounter = listCounter + 1 #adds one every itteration
+            if len(userString) < 1000:
+                if listCounter % 6 == 0: #every 5th name add a new line
+                    userString = userString + "\n"
+                else:
+                    userString = (userString + (row[0]) + ", ")
+            else:
+                if listCounter % 6 == 0: #every 5th name add a new line
+                    userString1 = userString1 + "\n"
+                else:
+                    userString1 = (userString1 + (row[0]) + ", ")
+
+        userString = userString[:-2]
+        userString1 = userString1[:-2]
+        userString = userString + "**"
+        userString1 = userString1 + "**"
+        titleName = "Everybody I Know!" #creates message for embed
+        carList = discord.Embed(colour=discord.Colour(0x29aaca)) #creates embed to send car data
+        
+        await message.channel.send("DMed you!") #responds with success message
+        #sets db info, and shows what bot handled the command
+        carList.add_field(name="User:", value=userString)
+        carList.set_author(name=titleName, icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
+        carList.set_footer(text=("rotorbot v" + versionNum), icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
+        #await message.channel.send(embed=carList)
+        await message.author.send("Here is a list of all users in the database! Some people might not even be from the same server!")
+        await message.author.send(embed=carList)
+        if userString1 != "**":
+            userString1 = userString1[:-4]
+            userString1 = userString1 + "**"
+            carList1 = discord.Embed(colour=discord.Colour(0x29aaca)) #creates embed to send car data
+            carList1.add_field(name="More Users:", value=userString1)
+            carList1.set_footer(text=("rotorbot v" + versionNum), icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
+            await message.author.send(embed=carList1)
+        return #exits
+
 
     #mute for mitsu evo server
     if text[0].lower() == 'mute' and message.guild.id == 514951085430013962 and "Admin" in role_names:
