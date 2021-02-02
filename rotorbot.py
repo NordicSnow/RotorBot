@@ -35,11 +35,13 @@
 # libraries
 import os, re, discord, discord.utils, sqlite3, os.path, requests, json, asyncio, random
 from discord import user
+from time import time, ctime
 
 #io
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)) #directs to exact file
 db_path = os.path.join(BASE_DIR, "imagestore.db") #database name configured here
 config_path = os.path.join(BASE_DIR, 'config.json')
+mute_path = os.path.join(BASE_DIR, "mutedusers.rbot") #mute file
 conn = sqlite3.connect(db_path, isolation_level=None) #set to apply changes on execution
 c = conn.cursor()
 
@@ -51,7 +53,9 @@ with open(config_path, "r") as read_file:
 token = config["discord_token"] #discord api client token
 clientID=config["imgur_token"] #imgur api client ID
 
-client = discord.Client() #client object
+intents = discord.Intents.default()
+intents.members = True
+client = discord.Client(intents=intents) #client object
 
 #project version number printed on documentation
 versionNum = "0.9.10"
@@ -127,12 +131,15 @@ async def on_message(message):
     ###############################
     ##   NON-SPECIFIC COMMANDS   ##
     ###############################
-    #regex for 'alfa' statement to inform users of their terrible taste
-    match = re.search(r'\brally art\b',message.content.lower())
+    #regex for 'built different' statement to inform users of their terrible taste
+    match = re.search(r'\bbuilt different\b',message.content.lower())
+    match1 = re.search(r"🙈",message.content)
 
     
-    if match: #checks if user has typed in a terribad car brand
-        await message.channel.send("rally art? you mean like this?\n" + rallyImages[random.randint(1, (len(rallyImages)-1))])
+    if match or match1 and message.guild.id == config['server_id']: #checks if user has typed in a terribad catchphrase
+        #await message.channel.send("Tard Wrangling Protocol engaged! Shame algorithms activated!")
+        emoji = client.get_emoji(800429901076234270)
+        await message.add_reaction(emoji)
 
 
         
@@ -261,6 +268,11 @@ async def on_message(message):
     elif text[0].lower() == 'addcar': #checks to see if command is invoked
         
         desc = message.content[8:] #gets image description
+        match = re.search(r'\bimgur.com\b',desc)
+        match1 = re.search(r'\bcdn.discordapp.com\b',desc)
+        if match or match1:
+            await message.channel.send("~no imgur/discord links allowed in descriptions! include an image with the post and it will be automatically added!")
+            return
         if desc == "": #handles error and informs user
             if message.attachments == []:
                 await message.channel.send("~uh oh! i've encountered a syntax error! (¤﹏¤)\nremember, "+message.author.name+", the command goes '+addcar ``your text here``'. A description ***MUST*** be included if run for the first time! If you just want to change the image you have saved, attach a new one and run the command again! W^W")
@@ -305,7 +317,7 @@ async def on_message(message):
             currentData = (c.fetchone())
             if currentData == None: #checks to see if user exists in the database
                 await message.channel.send("hmm, i can't seem to find a record on you. let me create one real quick... ╰(◡‿◡✿╰)") #sends error message
-                c.execute('INSERT INTO images VALUES (?,?,?,?)', (message.author.name.lower(), message.author.id, desc, jsonData['data']['link'])) #creates new values using user account and provided information
+                c.execute('INSERT INTO images VALUES (?,?,?,?)', (''.join(filter(str.isalnum, message.author.name.lower())), message.author.id, desc, jsonData['data']['link'])) #creates new values using user account and provided information
                 await message.channel.send("~~lovely. i created a record and added in your information! have a nice day! (^▽^)") #sends sucess message
             else:
                 c.execute('UPDATE images SET description = ?, link = ? WHERE uid = ? ', (desc, jsonData['data']['link'], message.author.id)) #updates existing information
@@ -400,16 +412,25 @@ async def on_message(message):
 
 
     #mute for mitsu evo server
+   
     if text[0].lower() == 'mute' and message.guild.id == 514951085430013962 and "Admin" in role_names:
         try:
-            timeSet = (int(text[2]) * 3600) #converts hour to seconds
+            inputTime = (int(text[2]) * 3600) #converts hour to seconds
+            userName = message.mentions[0].id
+            serverID = message.guild.id
+
+            t=time()
+
+            newTime = t + float(inputTime)
+
+            data = open(mute_path, "a")
+
+            data.write(str(newTime) + "|"+ str(userName)+"|" + str(serverID) + "|")
+            data.close()
+
             role = discord.utils.get(message.guild.roles, name="Muted") #gets role ID from server
             await message.mentions[0].add_roles(role)
             await message.channel.send("problem user resolution algorithm activated! deploying self reflection period!")
-
-            await asyncio.sleep(timeSet) #wait time for cooldown
-            await message.author.remove_roles(role) #removal
-            await message.channel.send("punishment of " +message.mentions[0].mention + " revoked!")
         except:
             await message.channel.send("there has been an internal error. thats all i know.\nsyntax is ``user <time in hours>`` if you forgot. decimal places don't work.")
 
@@ -417,13 +438,21 @@ async def on_message(message):
     firstLetter = message.content[0] #checks if first letter of a message is the invoking one. Can be configured from here.
     if firstLetter == config['invocation_symbol']: #if not invoking, request is thrown out
         
-        commandName = (message.content.lower()[1:],) # checks command name
-        c.execute('SELECT * FROM images WHERE Username =?', commandName) #compares command name amoung populated users
-        currentData = (c.fetchone())
-        if currentData == None: #if no user exists, command ends
-            return
+        if message.content.lower()[1:3] == "<@" or message.content.lower()[1:4] == " <@":
+            c.execute('SELECT * FROM images WHERE UID =?', [int(message.mentions[0].id)]) #compares pinged UID to DB
+            currentData = (c.fetchone())
+            if currentData == None: #if no user exists, command ends
+                message.channel.send("Sorry! This user does not exist in my memory!")
+            else:
+                await message.channel.send(currentData[2] + "\n" + currentData[3]) #otherwise, information from DB is supplied.
         else:
-            await message.channel.send(currentData[2] + "\n" + currentData[3]) #otherwise, information from DB is supplied.
+            commandName = (message.content.lower()[1:],) # checks command name
+            c.execute('SELECT * FROM images WHERE Username =?', commandName) #compares command name amoung populated users
+            currentData = (c.fetchone())
+            if currentData == None: #if no user exists, command ends
+                return
+            else:
+                await message.channel.send(currentData[2] + "\n" + currentData[3]) #otherwise, information from DB is supplied.
             
 #run command
 client.run(token)

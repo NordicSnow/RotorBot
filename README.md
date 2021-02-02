@@ -33,3 +33,9 @@ this is more of a limitation of using Imgur to handle image distribution. while 
 ### where do i get support?
 
 check out the [r/rx7 discord](https://discord.gg/Aut8TAV)
+
+
+
+## Licence:
+
+There is no licence. Steal what you want i don't care, nothing in here is useful in any way.

@@ -1,7 +1,7 @@
 {
   "discord_token": "<token>",
   "imgur_token": "<token>",
-  "server_id": 402689014328721418,
+  "server_id": 12345567803509483,
   "welcome_channel": 402689014328721420,
   "invocation_symbol": "+",
   "database_name": "imagestore.db",

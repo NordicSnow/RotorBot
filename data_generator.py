@@ -12,6 +12,7 @@ c = conn.cursor()
 
 def randString(length):
     letters = string.ascii_lowercase
+    letters = letters + string.ascii_uppercase
     finalName = ''.join(random.choice(letters) for i in range(length))
     return finalName
 
