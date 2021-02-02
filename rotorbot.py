@@ -137,7 +137,6 @@ async def on_message(message):
 
     
     if match or match1 and message.guild.id == config['server_id']: #checks if user has typed in a terribad catchphrase
-        #await message.channel.send("Tard Wrangling Protocol engaged! Shame algorithms activated!")
         emoji = client.get_emoji(800429901076234270)
         await message.add_reaction(emoji)
 
@@ -231,7 +230,7 @@ async def on_message(message):
                         else: #else it is applied
                             role = discord.utils.get(message.guild.roles, name="gamer") #gets role ID from server
                             await message.author.add_roles(role) #assigns role to user
-                            await message.channel.send("~welcome pro minecrafter! you now are recieving pings for vidya gaming related events! to opt-out, just run the command again. ≧◡≦ <3")
+                            await message.channel.send("~welcome pro minecrafter! you now are receiving pings for vidya gaming related events! to opt-out, just run the command again. ≧◡≦ <3")
                             return
 
                     #Assigns roles. Add options to "roleList"
@@ -250,7 +249,7 @@ async def on_message(message):
                         
                         
                 
-    if text[0].lower() == 'removerole' and message.guild.id == config['server_id']: #checks if addcar command is inputed. only works on r/rx7. TODO: move role adding to function to support multiple servers
+    if text[0].lower() == 'removerole' and message.guild.id == config['server_id']: #checks if addcar command is inputted. only works on r/rx7. TODO: move role adding to function to support multiple servers
             if message.author.id != 701871518530928701: #bodge code that literally just bans Rotorican from using the role picker
                 if len(text) < 2: #checks if there is a role listed afterwards
                     await message.channel.send("uhhh, you didn't type anything in? tell me what car you want to remove") #informs user there was a problem
@@ -279,7 +278,7 @@ async def on_message(message):
                 return #ends add image command to prevent exceptions from occuring due to bad data
             else:
                 response = requests.post('https://api.imgur.com/3/upload', data={'image':message.attachments[0].url, 'type':'url'}, headers={'Authorization': ('Client-ID ' + clientID)}) #uploads attachment URL to imgur
-                if str(response) == "<Response [200]>": #checks if upload suceeded
+                if str(response) == "<Response [200]>": #checks if upload succeeded
                     jsonData = response.json() #reads json data from response
 
                     c.execute('SELECT * FROM images WHERE UID =?', uid) #pulls user information
@@ -294,7 +293,7 @@ async def on_message(message):
                 elif str(response) == "<Response [417]>": #checks if 417, which is probably too large for the API to handle
                     await message.channel.send("Error! Imgur Upload Failed! HTTP Status Code 417: Bad Header! This is probably happening because the image you are uploading is too large to be processed by the API. Make sure your image is smaller than 10mb and try again! ") #sends confirmation
                     return
-                else: #if upload isn't sucessful, throws an error
+                else: #if upload isn't successful, throws an error
                     await message.channel.send("Error! Imgur Upload Failed! Either Imgur is down or there is a problem with your image.\nfor debugging: http " + str(response)) #sends confirmation
                     return
         
@@ -310,7 +309,7 @@ async def on_message(message):
 
 
         response = requests.post('https://api.imgur.com/3/upload', data={'image':message.attachments[0].url, 'type':'url'}, headers={'Authorization': ('Client-ID ' + clientID)}) #uploads attachment URL to imgur
-        if str(response) == "<Response [200]>": #checks if upload suceeded
+        if str(response) == "<Response [200]>": #checks if upload succeeded
             jsonData = response.json() #reads json data from response
 
             c.execute('SELECT * FROM images WHERE UID =?', uid) #pulls user information
@@ -318,14 +317,14 @@ async def on_message(message):
             if currentData == None: #checks to see if user exists in the database
                 await message.channel.send("hmm, i can't seem to find a record on you. let me create one real quick... ╰(◡‿◡✿╰)") #sends error message
                 c.execute('INSERT INTO images VALUES (?,?,?,?)', (''.join(filter(str.isalnum, message.author.name.lower())), message.author.id, desc, jsonData['data']['link'])) #creates new values using user account and provided information
-                await message.channel.send("~~lovely. i created a record and added in your information! have a nice day! (^▽^)") #sends sucess message
+                await message.channel.send("~~lovely. i created a record and added in your information! have a nice day! (^▽^)") #sends success message
             else:
                 c.execute('UPDATE images SET description = ?, link = ? WHERE uid = ? ', (desc, jsonData['data']['link'], message.author.id)) #updates existing information
                 await message.channel.send("~~thank you!!! ^>^\nyour data has been updated! have a nice day! {◕ ◡ ◕}") #sends confirmation
         elif str(response) == "<Response [417]>": #checks if 417, which is probably too large for the API to handle
             await message.channel.send("Error! Imgur Upload Failed! HTTP Status Code 417: Bad Header! This is probably happening because the image you are uploading is too large to be processed by the API. Make sure your image is smaller than 10mb and try again! ") #sends confirmation
             return
-        else: #if upload isn't sucessful, throws an error
+        else: #if upload isn't successful, throws an error
             await message.channel.send("Error! Imgur Upload Failed! Either Imgur is down or there is a problem with your image.\nfor debugging: http " + str(response)) #sends confirmation
             return
 
@@ -341,9 +340,6 @@ async def on_message(message):
     elif text[0].lower() == "iq" and message.guild.id != 551147201619951657: #checks if user has indicated they are dealing with a low IQ individual
             await message.channel.send("To be fair, you have to have a very high IQ to drive an FD RX-7.The car is extremely superior to any other modern supercar, and without a solid grasp of theoretical physics you can't even drive it. There's also it’s linear power delivery, which is deftly woven into it’s driving characterisation- it’s personal philosophy draws heavily from Italian designs, for instance. I personally understand this stuff; I have the intellectual capacity to truly appreciate the supreme handling, to realise that it’s not just good- it says something deep about LIFE. As a consequence people who dislike the FD truly ARE idiots- of course they wouldn't appreciate, for instance, the humour in the FD’s existential catchphrase “Boost in, Apex Seals out,” which itself is a cryptic reference to the tenuous balance between life and death. I'm smirking right now just imagining one of those addlepated simpletons scratching their heads in confusion as Yoichi Sato's genius design unfolds itself on the race track. What fools.. how I pity them. :joy: And yes, by the way, i DO have a FD tattoo. And no, you cannot see it. It's for the ladies' eyes only- and even then they have to demonstrate that they're within 5 IQ points of my own (preferably lower) beforehand. Nothin personnel kid :sunglasses:")
     
-
-    elif text[0].lower() == "lewd": #meme statement
-        await message.channel.send("uhh, idk, i get mine from here\nhttps://discord.gg/drSMAdG")
 
     elif text[0].lower() == "avatar": #checks if user wants to see their avatar
         if len(message.mentions) == 0: #checks to see if a user is mentioned, if not it will just show the author's avatar
@@ -368,13 +364,13 @@ async def on_message(message):
     #lists all users in image database
     elif text[0].lower() == "carlist":
         userString = '**' #string for users
-        userString1 = '**' #seperate string for usernames over 1000 characters
+        userString1 = '**' #separate string for usernames over 1000 characters
         c.execute('SELECT Username FROM images') #grabs all usernames from image table
         data = c.fetchall()
 
         listCounter = 0 #counter for list
         for row in data: #reads all rows
-            listCounter = listCounter + 1 #adds one every itteration
+            listCounter = listCounter + 1 #adds one every iteration
             if len(userString) < 1000:
                 if listCounter % 6 == 0: #every 5th name add a new line
                     userString = userString + "\n"
@@ -447,7 +443,7 @@ async def on_message(message):
                 await message.channel.send(currentData[2] + "\n" + currentData[3]) #otherwise, information from DB is supplied.
         else:
             commandName = (message.content.lower()[1:],) # checks command name
-            c.execute('SELECT * FROM images WHERE Username =?', commandName) #compares command name amoung populated users
+            c.execute('SELECT * FROM images WHERE Username =?', commandName) #compares command name among populated users
             currentData = (c.fetchone())
             if currentData == None: #if no user exists, command ends
                 return
