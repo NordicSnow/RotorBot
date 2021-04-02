@@ -65,8 +65,8 @@ locationList =["Northeast", "Southeast", "Midwest", "Southwest", "Northwest", "E
 
 #cute catchprases rotorbot will parrot. can be as many or little as you want.
 phrases = ["Hello, how are you? (⌒o⌒)", "How can i help you today? (≧◡≦)", "whats up? （＾⊆＾）", "tell me a joke! ^o^", "Hope you're having a fantastic day! ヽ( ´ ∇ ｀ )ノ", "You're doing quite well for yourself"]
-phrases2 = ["Why do you even check these? it's like you enjoy getting insulted you perv!", "Sorry can't talk, I wouldn't want you to be late to your recall appointment!", "Don't you have a corvette to be lusting after or something?", "Roses are red, violets are blue, my car is faster and lighter too", "Sorry, but I think your engine is in another castle!", "I've never met a valve I've liked. You're not really changing my mind on that."]
-phrases3 = ["Apologies, the ticket window is over there." , "Sorry, I’m not authorised to speak with passengers.", "If you have a question or complaint, please take it up with the transit authority.", "Please be prepared to pay your fare!"]
+phrases2 = ["how goes the swap? not done yet? figures.", "in over your head? you can stop whenever you want <3", "i'll be happy to assist in the process of inserting a Mazda RE into any car. thank you for your consideration!", "its... so... heavy...", "i would be scared if i was your firewall...", "wasn't this supposed to be 'easy'? :wink:", "Why do you even check these? it's like you enjoy getting insulted you perv!", "Sorry can't talk, I wouldn't want you to be late to your recall appointment!", "Don't you have a corvette to be lusting after or something?", "Roses are red, violets are blue, my car is faster and lighter too", "Sorry, but I think your engine is in another castle!", "I've never met a valve I've liked. You're not really changing my mind on that."]
+phrases3 = ["Apologies, the ticket window is over there." , "Sorry, I’m not authorized to speak with passengers.", "If you have a question or complaint, please take it up with the transit authority.", "Please be prepared to pay your fare!"]
 rallyImages =["https://i.imgur.com/EWeIQuS.jpg"]
 
 #help document
