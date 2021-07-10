@@ -33,9 +33,8 @@
 #)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # libraries
-import os, re, discord, discord.utils, sqlite3, os.path, requests, json, asyncio, random, shutil, magic, traceback
-from discord import user
-from time import time, ctime
+import os, re, discord, discord.utils, sqlite3, os.path, requests, json, random, magic, traceback, asyncio
+from time import time
 
 #io
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)) #directs to exact file
@@ -56,6 +55,9 @@ clientID=config["imgur_token"] #imgur api client ID
 intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents) #client object
+
+#banned users
+timeList = []
 
 #project version number printed on documentation
 versionNum = "0.9.10"
@@ -93,6 +95,21 @@ async def on_ready():
     print(f'{client.user.name} has connected to Discord!')
     await client.change_presence(activity=discord.Game(name=config['playing_message']))
 
+    while True:
+        t=time()
+        global timeList
+        if timeList == []:
+            await asyncio.sleep(10)
+        else:
+            for i in range(len(timeList)):
+                if t > float(timeList[i][0]):
+                    currGuild = client.get_guild(timeList[i][2])
+                    role = discord.utils.get(currGuild.roles, name="Muted") #gets role ID from server
+                    currUser = currGuild.get_member(timeList[i][1])
+                    await currUser.remove_roles(role)
+                else:
+                    await asyncio.sleep(5)
+
 #welcomes users, mentions them to grab attention, and points them to the welcome channel
 @client.event
 
@@ -103,6 +120,11 @@ async def on_member_join(member):
 
     if member.guild.id == config['server_id']: #checks to see if user is joining r/rx7 discord. this allows for one image db to run on multiple servers.
         await client.wait_until_ready()
+        #automatically mutes Santa and hides join message
+        if member.id == 527420259976871937:
+            role = discord.utils.get(member.guild.roles, name="Muted") #gets role ID from server
+            await member.add_roles(role) #assigns role to user
+            return
         channel = client.get_channel(config['welcome_channel'])
         await channel.send('Hello '+ member.mention +', ' + config['welcome_message'])
 
@@ -110,6 +132,7 @@ async def on_member_join(member):
 @client.event
 async def on_message(message):
     try:
+
         if message.content == "" or message.content == "+": #ignores messages with only images in them
             return
         
@@ -119,6 +142,7 @@ async def on_message(message):
         except:
             return
         
+        #removes @everyone
         role_names.pop(0)
         
         uid = (message.author.id,) #grabs Discord UID from message author
@@ -292,22 +316,21 @@ async def on_message(message):
                         await message.channel.send("~uh oh! i've encountered a syntax error! (¤﹏¤)\nremember, "+message.author.name+", the command goes '+addcar ``your text here``'. A description ***MUST*** be included if run for the first time! If you just want to change the image you have saved, attach a new one and run the command again! W^W")
                         return #ends add image command to prevent exceptions from occuring due to bad data
                     else:
-                        #response = requests.post('https://api.imgur.com/3/upload', data={'image':message.attachments[0].url, 'type':'url'}, headers={'Authorization': ('Client-ID ' + clientID)}) #uploads attachment URL to imgur
-                        #if str(response) == "<Response [200]>": #checks if upload succeeded
-                            #jsonData = response.json() #reads json data from response
-
                         c.execute('SELECT * FROM images WHERE UID =?', uid) #pulls user information
                         currentData = (c.fetchone())
                         if currentData == None: #checks to see if user exists in the database
                             await message.channel.send("hmm, i can't seem to find a record on you. i can make one, but to do that i need a description. attach one and i'll see what i can do. v( ‘.’ )v") #sends error message
                             return
                         else:
-                            await message.channel.send("Hello! You are currently using a beta version of the new image handler! Please report any issues to Nordic and thanks for your patience!") #sends confirmation
+                            await message.channel.send("Hello! You are currently using a beta version of the new image handler! There is currently a problem with Discord's cache that is making images slow to update. Please know that if you get a success message your image has been updated even if it doesn't show up. I have reported this issue to Discord and if it is not fixed soon i will implement a workaround. Thanks for your patience!") #sends confirmation
                             imgFile = (message.attachments[0].url).split("/")[-1]
                             fType = imgFile.lower().split(".")[-1]
 
                             onlyAlpha = re.compile('[^a-zA-Z]')
                             name = onlyAlpha.sub('', message.author.name.lower())
+                            if name == "":
+                                await message.channel.send("Your Discord name needs one or more English alphabetical character or a number in it to use Rotorbot! I can't write a file otherwise! This limitation might get removed in the future but for now I have to ask you to change names.")
+                                return
                             fType = name + "." + fType
                             fURL = "https://zekial.io/rbot/" + fType
                             #print(fURL)
@@ -323,7 +346,7 @@ async def on_message(message):
                                     return
                                 with open((BASE_DIR +"/rbot/" + fType),'wb') as f:
                                     f.write(file)
-                                c.execute('UPDATE images SET link = ? WHERE uid = ? ', (fURL, message.author.id)) #updates existing information
+                                c.execute('UPDATE images SET link = ?, GID = ? WHERE uid = ? ', (fURL, message.guild.id, message.author.id)) #updates existing information
                                 await message.channel.send("~~thank you!!! ^>^\nyour data has been updated! have a nice day! {◕ ◡ ◕}") #sends confirmation
                                 return
                             else: #if download isn't successful, throws an error
@@ -336,7 +359,7 @@ async def on_message(message):
                     if currentData == None: #checks to see if user exists in the database
                         await message.channel.send("hmm, i can't seem to find a record on you. i can make one, but to do that i need an image. attach one and i'll see what i can do. v( ‘.’ )v") #sends error message
                     else:
-                        c.execute('UPDATE images SET description = ? WHERE uid = ? ', (desc, message.author.id)) #updates existing information
+                        c.execute('UPDATE images SET description = ?, GID = ? WHERE uid = ? ', (desc, message.guild.id, message.author.id)) #updates existing information
                         await message.channel.send("~~thank you!!! ^>^\nyour data has been updated! have a nice day! {◕ ◡ ◕}") #sends confirmation
                     return #ends add image command to prevent exceptions from occuring due to bad data
 
@@ -349,11 +372,14 @@ async def on_message(message):
                     if match:
                         await message.channel.send("video links are not allowed!)") #sends reject message
                         return"""
-                await message.channel.send("Hello! You are currently using a beta version of the new image handler! Please report any issues to Nordic and thanks for your patience!") #sends confirmation
+                await message.channel.send("Hello! You are currently using a beta version of the new image handler! There is currently a problem with Discord's cache that is making images slow to update. Please know that if you get a success message your image has been updated even if it doesn't show up. I have reported this issue to Discord and if it is not fixed soon i will implement a workaround. Thanks for your patience!") #sends confirmation
                 imgFile = (message.attachments[0].url).split("/")[-1]
                 fType = imgFile.lower().split(".")[-1]
                 onlyAlpha = re.compile('[^a-zA-Z]')
                 name = onlyAlpha.sub('', message.author.name.lower())
+                if name == "":
+                    await message.channel.send("Your Discord name needs one or more English alphabetical character or a number in it to use Rotorbot! I can't write a file otherwise! This limitation might get removed in the future but for now I have to ask you to change names. Contact Nordic#5412 for help!")
+                    return
                 fType = name + "." + fType
                 fURL = "https://zekial.io/rbot/" + fType
                 #print(fURL)
@@ -375,10 +401,10 @@ async def on_message(message):
                     
                     if currentData == None: #checks to see if user exists in the database
                         await message.channel.send("hmm, i can't seem to find a record on you. let me create one real quick... ╰(◡‿◡✿╰)") #sends error message
-                        c.execute('INSERT INTO images VALUES (?,?,?,?)', (''.join(filter(str.isalnum, message.author.name.lower())), message.author.id, desc, fURL)) #creates new values using user account and provided information
+                        c.execute('INSERT INTO images VALUES (?,?,?,?,?)', (''.join(filter(str.isalnum, message.author.name.lower())), message.author.id, desc, fURL, message.guild.id)) #creates new values using user account and provided information
                         await message.channel.send("~~lovely. i created a record and added in your information! have a nice day! (^▽^)") #sends success message
                     else:
-                        c.execute('UPDATE images SET description = ?, link = ? WHERE uid = ? ', (desc, fURL, message.author.id)) #updates existing information
+                        c.execute('UPDATE images SET description = ?, link = ?, GID = ? WHERE uid = ? ', (desc, fURL, message.guild.id, message.author.id)) #updates existing information
                         await message.channel.send("~~thank you!!! ^>^\nyour data has been updated! have a nice day! {◕ ◡ ◕}") #sends confirmation
                     return
                 else: #if download isn't successful, throws an error
@@ -423,7 +449,7 @@ async def on_message(message):
         elif text[0].lower() == "carlist":
             userString = '**' #string for users
             userString1 = '**' #separate string for usernames over 1000 characters
-            c.execute('SELECT Username FROM images') #grabs all usernames from image table
+            c.execute('SELECT Username FROM images WHERE GID = ?', (message.guild.id, )) #grabs all usernames from image table
             data = c.fetchall()
 
             listCounter = 0 #counter for list
@@ -453,7 +479,7 @@ async def on_message(message):
             carList.set_author(name=titleName, icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
             carList.set_footer(text=("rotorbot v" + versionNum), icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
             #await message.channel.send(embed=carList)
-            await message.author.send("Here is a list of all users in the database! Some people might not even be from the same server!")
+            await message.author.send("Here is a list of all users from your server that are in the database!")
             await message.author.send(embed=carList)
             if userString1 != "**":
                 userString1 = userString1[:-4]
@@ -462,24 +488,37 @@ async def on_message(message):
                 carList1.add_field(name="More Users:", value=userString1)
                 carList1.set_footer(text=("rotorbot v" + versionNum), icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
                 await message.author.send(embed=carList1)
+            
+            await message.author.send("Bonus: A visual list of all the cars of the RX-7 Discord can be seen here: https://gallery.rotorhead.club/")
             return #exits
 
-        #mute for mitsu evo server
+        if text[0] == "dbedit" and "Moderators" in role_names:
+            if text[1] == "image":
+                c.execute('UPDATE images set Link=? where UID =?', (text[3], message.mentions[0].id)) 
+                await message.channel.send("Data edited successfully.")
+            elif text[1] == "description":
+                contentData = " ".join(text[3:])
+                c.execute('UPDATE images set Description=? where UID =?', (contentData, message.mentions[0].id)) 
+                await message.channel.send("Data edited successfully.")
+            if text[1] == "username":
+                c.execute('UPDATE images set Username=? where UID =?', (text[3], message.mentions[0].id)) 
+                await message.channel.send("Data edited successfully.")
 
-        if text[0].lower() == 'mute' and message.guild.id == 514951085430013962 and "Admin" in role_names:
+        #mute for mitsu evo server
+        if text[0].lower() == 'mute' and message.guild.id == 312216330604642305 and "Moderators" in role_names:
             try:
+                global timeList
                 inputTime = (int(text[2]) * 3600) #converts hour to seconds
+                #inputTime = (int(text[2])) #just runs seconds. only used for testing.
                 userName = message.mentions[0].id
                 serverID = message.guild.id
+
 
                 t=time()
 
                 newTime = t + float(inputTime)
 
-                data = open(mute_path, "a")
-
-                data.write(str(newTime) + "|"+ str(userName)+"|" + str(serverID) + "|")
-                data.close()
+                timeList.append([str(newTime), userName, serverID])
 
                 role = discord.utils.get(message.guild.roles, name="Muted") #gets role ID from server
                 await message.mentions[0].add_roles(role)
