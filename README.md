@@ -16,8 +16,9 @@ first, install discord py and pillow
 ```
 python3 -m pip install -U discord.py
 ```
-
-`python3 -m pip install -U pillow`
+```
+python3 -m pip install -U pillow
+```
 
 next, open up "config.json" and input a discord token ([gotten from here](https://discordapp.com/developers/applications/)) as well as an imgur Client ID ([gotten from here](https://api.imgur.com/oauth2/addclient)). If you want to do role assignments and welcome messages through rotorbot, add in your server ID and a channel for welcome messages to go into. If you already have another bot doing that task, just leave it with it's default value. For servers using the version hosted by Nordic, these functions are disabled already. If you want to change what roles you can assign, you can modify them in the "roles" list in "rotorbot.py"
 
