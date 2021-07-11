@@ -1,4 +1,4 @@
-import os, sqlite3, shutil, requests
+import os, sqlite3, shutil, requests, random, string
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)) #directs to exact file
 db_path = os.path.join(BASE_DIR, "imagestore.db") #database name configured here
@@ -17,8 +17,10 @@ for i in range(userNum):
     imgFile = (data[1][1]).split("/")[-1]
     fType = imgFile.lower().split(".")[-1]
 
-    fType = data[i][0] + "." + fType
-    fURL = "https://zekial.io/rbot/" + fType
+    randoString = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(6)) #creates a random 6 digit string
+
+    fType = data[i][0] +"_" + randoString + "." + fType
+    fURL = "i.rotorhead.club/rbot/" + fType
     #print(fURL)
     #print(fType)
     try:

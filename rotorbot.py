@@ -33,8 +33,9 @@
 #)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # libraries
-import os, re, discord, discord.utils, sqlite3, os.path, requests, json, random, magic, traceback, asyncio
+import os, re, discord, discord.utils, sqlite3, os.path, requests, json, random, magic, traceback, asyncio, string
 from time import time
+from PIL import Image, ImageOps
 
 #io
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)) #directs to exact file
@@ -48,6 +49,8 @@ c = conn.cursor()
 with open(config_path, "r") as read_file:
     config = json.load(read_file)
 
+#api export file
+file_path = os.path.join(BASE_DIR, "rbot.json") #export file
 #bot tokens
 token = config["discord_token"] #discord api client token
 clientID=config["imgur_token"] #imgur api client ID
@@ -90,6 +93,79 @@ embedNo7.add_field(name="Show an image of a user's car", value="To see a given u
 embedNo7.add_field(name="Add or edit image linker data", value="To add or edit a user image saved in the image linker, use the command '+addcar ``your description here``' and attach your image to the message. This command can also be used to edit an existing dataset. To just change the description you do not need to attach an image. Similarly, to change the image you don't have to include a description.")
 embedNo7.add_field(name="View user list", value="To see a list of viewable cars people have saved, type ``+carlist`` and a full list will be DMed to you!")
 #shows console ready message and changes game status
+
+#File downloader
+async def writeImage(message, c):
+    #grabs last file to delete
+    c.execute("SELECT Link, minImg from images where UID = ?", (message.author.id, ))
+    currentData = (c.fetchone())
+    if currentData != None:
+        fileToYeet = currentData[0].split("/")[-1]
+        fileToYeet=BASE_DIR +"/rbot/" + fileToYeet
+        if os.path.exists(fileToYeet):
+            os.remove(fileToYeet)
+        else:
+            pass
+        fileToYeet = currentData[1].split("/")[-1]
+        fileToYeet=BASE_DIR +"/min/" + fileToYeet
+        if os.path.exists(fileToYeet):
+            os.remove(fileToYeet)
+        else:
+            pass
+
+    imgFile = (message.attachments[0].url).split("/")[-1]
+    fType = imgFile.lower().split(".")[-1]
+    onlyAlpha = re.compile('[^a-zA-Z]')
+    name = onlyAlpha.sub('', message.author.name.lower())
+    if name == "":
+        name = "unsupportedName"
+        #await message.channel.send("Your Discord name needs one or more English alphabetical character or a number in it to use Rotorbot! I can't write a file otherwise! This limitation might get removed in the future but for now I have to ask you to change names. Contact Nordic#5412 for help!")
+    randoString = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(6)) #creates a random 6 digit string
+    fType = name + "_" + randoString + "." + fType
+    fURL = "https://i.rotorhead.club/rbot/" + fType
+
+    response = requests.get(message.attachments[0].url, stream = True)
+    if str(response) == "<Response [200]>":
+        response.raw.decode_content = True
+        file = response.raw.read()
+        validation = magic.from_buffer(file[:1024])
+        validation = validation.split(" ")
+        if validation[0] != "JPEG" and validation[0] != "PNG":
+            await message.channel.send("Filetype " + validation[0] + " is not supported. Please reupload in JPG or PNG format.")
+            return
+        currImage = BASE_DIR +"/rbot/" + fType
+        with open(currImage,'wb') as f:
+            f.write(file)
+        return True, fURL, currImage
+    else:
+        return False, fURL, ""
+
+def updateAPI (currImage, c, UID):
+
+    fileName = currImage.split("/")[-1]
+
+    picture = Image.open(currImage)
+    picture = ImageOps.exif_transpose(picture)
+    rgb_picture = picture.convert('RGB')
+    rgb_picture.save(BASE_DIR +"/min/" +fileName + ".jpg", 
+                 "JPEG", 
+                 optimize = True, 
+                 quality = 40)
+
+    finalLink = "https://i.rotorhead.club/min/" + fileName + ".jpg"
+    c.execute('UPDATE images SET minImg = ? WHERE UID = ?', (finalLink, UID))
+    c.execute('SELECT * FROM images')
+    data = c.fetchall()
+
+    #print(type(data))
+    finalDict = {}
+    for i in range(len(data)):
+            finalDict[data[i][0]] = {'UID': data[i][1], 'Desc' : data[i][2], "Link": data[i][3], "GID" : data[i][4], "minLink" : data[i][5]}
+
+    with open(file_path, 'w') as jsonFile:
+        json.dump(finalDict, jsonFile, indent=4, sort_keys=True)
+    return True
+
 @client.event
 async def on_ready():
     print(f'{client.user.name} has connected to Discord!')
@@ -322,32 +398,11 @@ async def on_message(message):
                             await message.channel.send("hmm, i can't seem to find a record on you. i can make one, but to do that i need a description. attach one and i'll see what i can do. v( ‘.’ )v") #sends error message
                             return
                         else:
-                            await message.channel.send("Hello! You are currently using a beta version of the new image handler! There is currently a problem with Discord's cache that is making images slow to update. Please know that if you get a success message your image has been updated even if it doesn't show up. I have reported this issue to Discord and if it is not fixed soon i will implement a workaround. Thanks for your patience!") #sends confirmation
-                            imgFile = (message.attachments[0].url).split("/")[-1]
-                            fType = imgFile.lower().split(".")[-1]
-
-                            onlyAlpha = re.compile('[^a-zA-Z]')
-                            name = onlyAlpha.sub('', message.author.name.lower())
-                            if name == "":
-                                await message.channel.send("Your Discord name needs one or more English alphabetical character or a number in it to use Rotorbot! I can't write a file otherwise! This limitation might get removed in the future but for now I have to ask you to change names.")
-                                return
-                            fType = name + "." + fType
-                            fURL = "https://zekial.io/rbot/" + fType
-                            #print(fURL)
-                            #print(fType)
-                            response = requests.get(message.attachments[0].url, stream = True)
-                            if str(response) == "<Response [200]>":
-                                response.raw.decode_content = True
-                                file = response.raw.read()
-                                validation = magic.from_buffer(file[:1024])
-                                validation = validation.split(" ")
-                                if validation[0] != "JPEG" and validation[0] != "PNG":
-                                    await message.channel.send("Filetype " + validation[0] + " is not supported. Please reupload in JPG or PNG format.")
-                                    return
-                                with open((BASE_DIR +"/rbot/" + fType),'wb') as f:
-                                    f.write(file)
+                            successVar, fURL, currImg = await writeImage(message, c)
+                            if successVar== True:
                                 c.execute('UPDATE images SET link = ?, GID = ? WHERE uid = ? ', (fURL, message.guild.id, message.author.id)) #updates existing information
                                 await message.channel.send("~~thank you!!! ^>^\nyour data has been updated! have a nice day! {◕ ◡ ◕}") #sends confirmation
+                                updateAPI(currImg, c, uid[0])
                                 return
                             else: #if download isn't successful, throws an error
                                 await message.channel.send("Error! There was a problem downloading the image.\nfor debugging: http " + str(response)) #sends confirmation
@@ -364,48 +419,22 @@ async def on_message(message):
                     return #ends add image command to prevent exceptions from occuring due to bad data
 
 
-                """response = requests.post('https://api.imgur.com/3/upload', data={'image':message.attachments[0].url, 'type':'url'}, headers={'Authorization': ('Client-ID ' + clientID)}) #uploads attachment URL to imgur
-                if str(response) == "<Response [200]>": #checks if upload succeeded
-                    jsonData = response.json() #reads json data from response
-
-                    match = re.search(r'mp4', jsonData['data']['link'])
-                    if match:
-                        await message.channel.send("video links are not allowed!)") #sends reject message
-                        return"""
-                await message.channel.send("Hello! You are currently using a beta version of the new image handler! There is currently a problem with Discord's cache that is making images slow to update. Please know that if you get a success message your image has been updated even if it doesn't show up. I have reported this issue to Discord and if it is not fixed soon i will implement a workaround. Thanks for your patience!") #sends confirmation
-                imgFile = (message.attachments[0].url).split("/")[-1]
-                fType = imgFile.lower().split(".")[-1]
-                onlyAlpha = re.compile('[^a-zA-Z]')
-                name = onlyAlpha.sub('', message.author.name.lower())
-                if name == "":
-                    await message.channel.send("Your Discord name needs one or more English alphabetical character or a number in it to use Rotorbot! I can't write a file otherwise! This limitation might get removed in the future but for now I have to ask you to change names. Contact Nordic#5412 for help!")
-                    return
-                fType = name + "." + fType
-                fURL = "https://zekial.io/rbot/" + fType
-                #print(fURL)
-                #print(fType)
-                response = requests.get(message.attachments[0].url, stream = True)
-                if str(response) == "<Response [200]>":
-                    response.raw.decode_content = True
-                    file = response.raw.read()
-                    validation = magic.from_buffer(file[:1024])
-                    validation = validation.split(" ")
-                    if validation[0] != "JPEG" and validation[0] != "PNG":
-                        await message.channel.send("Filetype " + validation[0] + " is not supported. Please reupload in JPG or PNG format.")
-                        return
-                    with open((BASE_DIR +"/rbot/" + fType),'wb') as f:
-                        f.write(file)
+                successVar, fURL, currImg = await writeImage(message, c)
+                if successVar== True:
 
                     c.execute('SELECT * FROM images WHERE UID =?', uid) #pulls user information
                     currentData = (c.fetchone())
                     
                     if currentData == None: #checks to see if user exists in the database
                         await message.channel.send("hmm, i can't seem to find a record on you. let me create one real quick... ╰(◡‿◡✿╰)") #sends error message
-                        c.execute('INSERT INTO images VALUES (?,?,?,?,?)', (''.join(filter(str.isalnum, message.author.name.lower())), message.author.id, desc, fURL, message.guild.id)) #creates new values using user account and provided information
+                        c.execute('INSERT INTO images VALUES (?,?,?,?,?, ?)', (''.join(filter(str.isalnum, message.author.name.lower())), message.author.id, desc, fURL, message.guild.id, "")) #creates new values using user account and provided information
                         await message.channel.send("~~lovely. i created a record and added in your information! have a nice day! (^▽^)") #sends success message
+                        updateAPI(currImg, c, uid[0])
+                        
                     else:
                         c.execute('UPDATE images SET description = ?, link = ?, GID = ? WHERE uid = ? ', (desc, fURL, message.guild.id, message.author.id)) #updates existing information
                         await message.channel.send("~~thank you!!! ^>^\nyour data has been updated! have a nice day! {◕ ◡ ◕}") #sends confirmation
+                        updateAPI(currImg, c, uid[0])
                     return
                 else: #if download isn't successful, throws an error
                     await message.channel.send("Error! There was a problem downloading the image.\nfor debugging: http " + str(response)) #sends confirmation
