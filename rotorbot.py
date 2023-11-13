@@ -56,14 +56,20 @@ token = config["discord_token"] #discord api client token
 clientID=config["imgur_token"] #imgur api client ID
 
 intents = discord.Intents.default()
+intents.message_content = True
 intents.members = True
+intents.reactions = True
 client = discord.Client(intents=intents) #client object
 
 #banned users
 timeList = []
 
 #project version number printed on documentation
-versionNum = "0.9.10"
+versionNum = "0.9.11"
+
+carEmojiMessageID = 1173433306184962059
+locationEmojiMessageID = 1173433779734462524
+interestEmojiMessageID = 1173435004798369833
 
 roleList = ["SA", "FB", "FC", "FD", "RX-8", "MX-5", "gamer"] #list of roles available to assign via bot
 locationList =["Northeast", "Southeast", "Midwest", "Southwest", "Northwest", "Europe", "Australia/New Zealand", "Canada"]
@@ -114,7 +120,11 @@ async def writeImage(message, c):
             pass
 
     imgFile = (message.attachments[0].url).split("/")[-1]
+    #removes junk from discord update
+    splitFile = imgFile.split("?ex=")
+    imgFile=splitFile[0]
     fType = imgFile.lower().split(".")[-1]
+    print(fType)
     onlyAlpha = re.compile('[^a-zA-Z]')
     name = onlyAlpha.sub('', message.author.name.lower())
     if name == "":
@@ -185,6 +195,106 @@ async def on_ready():
                     await currUser.remove_roles(role)
                 else:
                     await asyncio.sleep(5)
+
+@client.event
+async def on_raw_reaction_add(payload):
+    #print(str(payload.emoji))
+    async def addRoleFromEmoji(payload, roleName):
+        role = discord.utils.get((client.get_guild(payload.guild_id)).roles, name=roleName)
+        await payload.member.add_roles(role) #assigns role to user
+        await payload.member.send('Role ' + roleName +' Added!')
+
+    #SA
+    if str(payload.emoji) == "<:12abest:974087344867115038>" and payload.message_id == carEmojiMessageID:
+        await addRoleFromEmoji(payload, "SA")
+    #FB
+    if str(payload.emoji) == "<:fb:1173418975477121145>" and payload.message_id == carEmojiMessageID:
+        await addRoleFromEmoji(payload, "FB")
+    #FC
+    if str(payload.emoji) == "<:fc:1173418993101582386>" and payload.message_id == carEmojiMessageID:
+        await addRoleFromEmoji(payload, "FC")
+    #FD
+    if str(payload.emoji) == "<:fd:1173419006569500744>" and payload.message_id == carEmojiMessageID:
+        await addRoleFromEmoji(payload, "FD")
+    #RX-8
+    if str(payload.emoji) == "🎱" and payload.message_id == carEmojiMessageID:
+        await addRoleFromEmoji(payload, "RX-8")
+    #MX-5
+    if str(payload.emoji) == "<:mx5:1173419024261054495>" and payload.message_id == carEmojiMessageID:
+        await addRoleFromEmoji(payload, "MX-5")
+
+
+    if str(payload.emoji) == "🌲" and payload.message_id == locationEmojiMessageID:
+        await addRoleFromEmoji(payload, "Northeast")
+    if str(payload.emoji) == "🌴" and payload.message_id == locationEmojiMessageID:
+        await addRoleFromEmoji(payload, "Southeast")
+    if str(payload.emoji) == "🌽" and payload.message_id == locationEmojiMessageID:
+        await addRoleFromEmoji(payload, "Midwest")
+    if str(payload.emoji) == "🏜️" and payload.message_id == locationEmojiMessageID:
+        await addRoleFromEmoji(payload, "Southwest")
+    if str(payload.emoji) == "🌫️" and payload.message_id == locationEmojiMessageID:
+        await addRoleFromEmoji(payload, "Northwest")
+    if str(payload.emoji) == "🏰" and payload.message_id == locationEmojiMessageID:
+        await addRoleFromEmoji(payload, "Europe")
+    if str(payload.emoji) == "🦘" and payload.message_id == locationEmojiMessageID:
+        await addRoleFromEmoji(payload, "Australia/New Zealand")
+    if str(payload.emoji) == "🍁" and payload.message_id == locationEmojiMessageID:
+        await addRoleFromEmoji(payload, "Canada")
+
+    if str(payload.emoji) == "🎮" and payload.message_id == interestEmojiMessageID:
+        await addRoleFromEmoji(payload, "gamer")
+    if str(payload.emoji) == "🏍️" and payload.message_id == interestEmojiMessageID:
+        await addRoleFromEmoji(payload, "🚲💧Bike Chad")
+
+@client.event
+async def on_raw_reaction_remove(payload):
+    async def removeRoleFromEmoji(payload, roleName):
+        role = discord.utils.get((client.get_guild(payload.guild_id)).roles, name=roleName)
+        currGuild = client.get_guild(payload.guild_id)
+        member = currGuild.get_member(payload.user_id)
+        await member.remove_roles(role) #removes role from user
+        await member.send('Role ' + roleName +' Removed!')
+
+    #SA
+    if str(payload.emoji) == "<:12abest:974087344867115038>" and payload.message_id == carEmojiMessageID:
+        await removeRoleFromEmoji(payload, "SA")
+    #FB
+    if str(payload.emoji) == "<:fb:1173418975477121145>" and payload.message_id == carEmojiMessageID:
+        await removeRoleFromEmoji(payload, "FB")
+    #FC
+    if str(payload.emoji) == "<:fc:1173418993101582386>" and payload.message_id == carEmojiMessageID:
+        await removeRoleFromEmoji(payload, "FC")
+    #FD
+    if str(payload.emoji) == "<:fd:1173419006569500744>" and payload.message_id == carEmojiMessageID:
+        await removeRoleFromEmoji(payload, "FD")
+    #RX-8
+    if str(payload.emoji) == "🎱" and payload.message_id == carEmojiMessageID:
+        await removeRoleFromEmoji(payload, "RX-8")
+    #MX-5
+    if str(payload.emoji) == "<:mx5:1173419024261054495>" and payload.message_id == carEmojiMessageID:
+        await removeRoleFromEmoji(payload, "MX-5")
+
+    if str(payload.emoji) == "🌲" and payload.message_id == locationEmojiMessageID:
+        await removeRoleFromEmoji(payload, "Northeast")
+    if str(payload.emoji) == "🌴" and payload.message_id == locationEmojiMessageID:
+        await removeRoleFromEmoji(payload, "Southeast")
+    if str(payload.emoji) == "🌽" and payload.message_id == locationEmojiMessageID:
+        await removeRoleFromEmoji(payload, "Midwest")
+    if str(payload.emoji) == "🏜️" and payload.message_id == locationEmojiMessageID:
+        await removeRoleFromEmoji(payload, "Southwest")
+    if str(payload.emoji) == "🌫️" and payload.message_id == locationEmojiMessageID:
+        await removeRoleFromEmoji(payload, "Northwest")
+    if str(payload.emoji) == "🏰" and payload.message_id == locationEmojiMessageID:
+        await removeRoleFromEmoji(payload, "Europe")
+    if str(payload.emoji) == "🦘" and payload.message_id == locationEmojiMessageID:
+        await removeRoleFromEmoji(payload, "Australia/New Zealand")
+    if str(payload.emoji) == "🍁" and payload.message_id == locationEmojiMessageID:
+        await removeRoleFromEmoji(payload, "Canada")
+
+    if str(payload.emoji) == "🎮" and payload.message_id == interestEmojiMessageID:
+        await removeRoleFromEmoji(payload, "gamer")
+    if str(payload.emoji) == "🏍️" and payload.message_id == interestEmojiMessageID:
+        await removeRoleFromEmoji(payload, "🚲💧Bike Chad")
 
 #welcomes users, mentions them to grab attention, and points them to the welcome channel
 @client.event
@@ -274,7 +384,7 @@ async def on_message(message):
 
         #role assign
         if text[0].lower() == 'addrole' and message.guild.id == config['server_id']: #checks if addcar command is inputed. only works on r/rx7. TODO: move role adding to function to support multiple servers
-            if message.author.id != 335965535168757773: #bodge code that literally just bans Rotorican from using the role picker
+            if message.author.id != 383924216191254532: #bodge code that literally just bans Rotorican from using the role picker
                 if len(text) < 2: #checks if there is a role listed afterwards
                     await message.channel.send("uhhh, you didn't type anything in? tell me what you own and i'll add it! ٩◔‿◔۶") #informs user there was a problem
                     return
@@ -405,7 +515,7 @@ async def on_message(message):
                                 updateAPI(currImg, c, uid[0])
                                 return
                             else: #if download isn't successful, throws an error
-                                await message.channel.send("Error! There was a problem downloading the image.\nfor debugging: http " + str(response)) #sends confirmation
+                                await message.channel.send("Error! There was a problem downloading the image.") #sends confirmation
                                 return
                 
                 if message.attachments == []: #checks to make sure that user has included an attachment, and updates their record without an image
@@ -437,7 +547,7 @@ async def on_message(message):
                         updateAPI(currImg, c, uid[0])
                     return
                 else: #if download isn't successful, throws an error
-                    await message.channel.send("Error! There was a problem downloading the image.\nfor debugging: http " + str(response)) #sends confirmation
+                    await message.channel.send("Error! There was a problem downloading the image.") #sends confirmation
                     return
 
 
@@ -460,8 +570,8 @@ async def on_message(message):
                 photo = discord.Embed(colour=discord.Colour(0x29aaca)) #creates embed to send avatar in
                 await message.channel.send("looking cute! (^L^)") #responds with success message
                 #sets avatar image, username, and shows what bot handled the command
-                photo.set_image(url=str(message.author.avatar_url))
-                photo.set_author(name=titleName, icon_url=message.author.avatar_url)
+                photo.set_image(url=str(message.author.avatar))
+                photo.set_author(name=titleName, icon_url=message.author.avatar)
                 photo.set_footer(text=("rotorbot v" + versionNum), icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
                 await message.channel.send(embed=photo)
             else: #if a user is mentioned
@@ -469,8 +579,8 @@ async def on_message(message):
                 photo = discord.Embed(title=titleName, colour=discord.Colour(0x29aaca)) #created embed
                 await message.channel.send("fancy! ＼(^-^)／") #sends success message
                 #sets target's avatar, username, and shows what bot handled the command
-                photo.set_image(url=str(message.mentions[0].avatar_url))
-                photo.set_author(name="request by " + message.author.name, icon_url=message.author.avatar_url)
+                photo.set_image(url=str(message.mentions[0].avatar))
+                photo.set_author(name="request by " + message.author.name, icon_url=message.author.avatar)
                 photo.set_footer(text=("rotorbot v" + versionNum), icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
                 await message.channel.send(embed=photo)
 
@@ -478,20 +588,29 @@ async def on_message(message):
         elif text[0].lower() == "carlist":
             userString = '**' #string for users
             userString1 = '**' #separate string for usernames over 1000 characters
-            c.execute('SELECT Username FROM images WHERE GID = ?', (message.guild.id, )) #grabs all usernames from image table
+            #c.execute('SELECT Username FROM images WHERE GID = ?', (message.guild.id, )) #grabs all usernames from image table
+            c.execute('SELECT Username FROM images WHERE GID = 312216330604642305') #grabs all usernames from image table
             data = c.fetchall()
 
             listCounter = 0 #counter for list
+            secondRun = False
             for row in data: #reads all rows
                 listCounter = listCounter + 1 #adds one every iteration
                 if len(userString) < 1000:
-                    if listCounter % 6 == 0: #every 5th name add a new line
-                        userString = userString + "\n"
+                    if listCounter == 6: #every 5th name add a new line
+                        userString = userString +  (row[0]) +  "\n"
+                        listCounter = 0
                     else:
                         userString = (userString + (row[0]) + ", ")
                 else:
-                    if listCounter % 6 == 0: #every 5th name add a new line
+                    if secondRun == False:
+                        listCounter = 0
+                        secondRun = True
+                        userString1 = (userString1 + (row[0]) + ", ")
+                        continue
+                    if listCounter == 6: #every 5th name add a new line
                         userString1 = userString1 + "\n"
+                        listCounter = 0
                     else:
                         userString1 = (userString1 + (row[0]) + ", ")
 
@@ -514,7 +633,7 @@ async def on_message(message):
                 userString1 = userString1[:-4]
                 userString1 = userString1 + "**"
                 carList1 = discord.Embed(colour=discord.Colour(0x29aaca)) #creates embed to send car data
-                carList1.add_field(name="More Users:", value=userString1)
+                carList1.add_field(name="More Users: (list went over the character limit!)", value=userString1)
                 carList1.set_footer(text=("rotorbot v" + versionNum), icon_url="https://cdn.discordapp.com/avatars/667799244987695104/a84e8b9d69329358e9a29b4bfeb8b3ca.png?size=256")
                 await message.author.send(embed=carList1)
             
@@ -558,6 +677,13 @@ async def on_message(message):
         #Image Link Handler v0.4 - now ignores case
         firstLetter = message.content[0] #checks if first letter of a message is the invoking one. Can be configured from here.
         if firstLetter == config['invocation_symbol']: #if not invoking, request is thrown out
+
+            #hardcode of nordic in honda server
+            if message.guild.id == 867791728177709067:
+                if message.content.lower()[1:22] == "<@!52522956294721536>" or message.content.lower()[1:25] == " <@!52522956294721536>" or message.content.lower()[1:] == "nordic":
+                    await message.channel.send("Nordic's 2015 Honda CR-Z EX 6MT\nhttps://i.rotorhead.club/rbot/nordic-cr-z.jpg")
+                    return
+
             
             if message.content.lower()[1:3] == "<@" or message.content.lower()[1:4] == " <@":
                 c.execute('SELECT * FROM images WHERE UID =?', [int(message.mentions[0].id)]) #compares pinged UID to DB
